@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&family=Onest:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #0a0c10; }
+    a { color: #6c7cff; text-decoration: none; }
+    a:hover { color: #f2f2f0; }
+
+    .lattice { position: absolute; inset: 0; overflow: hidden; }
+    .lattice__still,
+    .lattice__beam {
+      position: absolute; inset: -10%;
+      background-image:
+        linear-gradient(to right, rgba(242,242,240,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(242,242,240,0.05) 1px, transparent 1px);
+      background-size: 90px 90px;
+    }
+    .lattice__beam {
+      background-image:
+        linear-gradient(to right, #6c7cff 1px, transparent 1px),
+        linear-gradient(to bottom, #6c7cff 1px, transparent 1px);
+      -webkit-mask-image: linear-gradient(100deg, transparent 36%, #000 47%, #000 53%, transparent 64%);
+      mask-image: linear-gradient(100deg, transparent 36%, #000 47%, #000 53%, transparent 64%);
+      -webkit-mask-size: 240% 240%;
+      mask-size: 240% 240%;
+      animation: sweep 9s linear infinite;
+      opacity: 0.5;
+    }
+    @keyframes sweep {
+      from { -webkit-mask-position: 180% 0; mask-position: 180% 0; }
+      to   { -webkit-mask-position: -80% 0; mask-position: -80% 0; }
+    }
+
+    /* Каретка в первом поле */
+    .caret { display: inline-block; width: 1px; height: 19px; background: #6c7cff; vertical-align: -3px; animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+    /* Линия под активным полем набегает слева */
+    .fill { position: relative; }
+    .fill::after {
+      content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%;
+      background: #2b3fe0; transform-origin: left; transform: scaleX(0);
+      animation: grow 1.4s cubic-bezier(.16,1,.3,1) .35s forwards;
+    }
+    @keyframes grow { to { transform: scaleX(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lattice__beam, .caret { animation: none; }
+      .fill::after { transform: scaleX(1); animation: none; }
+    }
+  </style>
+</helmet>
+
+<div style="position: relative; width: 1440px; height: 900px; background: #0a0c10; overflow: hidden; font-family: Onest, system-ui, sans-serif;">
+
+  <div class="lattice">
+    <div class="lattice__still"></div>
+    <div class="lattice__beam"></div>
+  </div>
+
+  <div style="position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 96px; padding: 104px 64px 0;">
+
+    <!-- Левая колонка -->
+    <div style="display: flex; flex-direction: column; gap: 44px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.18em; color: #565d66;">ЗАЯВКА</div>
+
+      <div style="font-family: Literata, Georgia, serif; font-weight: 700; font-size: 68px; line-height: 0.94; letter-spacing: -0.035em; color: #f2f2f0;">
+        Расскажите,<br>что нужно<br><span style="font-style: italic; font-weight: 400; color: #6c7cff;">сделать</span>
+      </div>
+
+      <div style="max-width: 46ch; font-size: 17px; line-height: 1.6; font-weight: 300; color: #8a9099;">
+        Вернёмся с уточняющими вопросами и вилкой стоимости. Если поймём, что задача не наша, скажем прямо и подскажем, к кому идти.
+      </div>
+
+      <!-- Условия: таблица, а не список с точками -->
+      <div style="display: flex; flex-direction: column; margin-top: 8px;">
+        <div style="display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid rgba(242,242,240,0.12);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.1em; color: #565d66; padding-top: 3px;">ОЦЕНКА</div>
+          <div style="font-size: 15.5px; line-height: 1.5; color: #c5cad0;">Бесплатная. По типовой задаче отвечаем за день, по сложной — за два-три с декомпозицией.</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid rgba(242,242,240,0.12);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.1em; color: #565d66; padding-top: 3px;">ДОГОВОР</div>
+          <div style="font-size: 15.5px; line-height: 1.5; color: #c5cad0;">Фиксированный состав работ и сроки. Предоплата 40 %, остаток по этапам.</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; padding: 18px 0; border-top: 1px solid rgba(242,242,240,0.12); border-bottom: 1px solid rgba(242,242,240,0.12);">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.1em; color: #565d66; padding-top: 3px;">ПРАВКИ</div>
+          <div style="font-size: 15.5px; line-height: 1.5; color: #c5cad0;">В рамках согласованного ТЗ входят в стоимость и не тарифицируются отдельно.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Форма: поля-строки, без коробок и скруглений -->
+    <div style="display: flex; flex-direction: column; gap: 38px; padding-top: 34px;">
+
+      <div style="display: flex; flex-direction: column; gap: 12px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #565d66;">ЧТО НУЖНО СДЕЛАТЬ</div>
+        <div class="fill" style="border-bottom: 1px solid rgba(242,242,240,0.2); padding-bottom: 16px; font-size: 19px; color: #f2f2f0; font-weight: 300; min-height: 56px;">
+          Отвалился обмен с 1С, заказы не уходят в учёт<span class="caret"></span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #565d66;">КАК С ВАМИ СВЯЗАТЬСЯ</div>
+        <div style="border-bottom: 1px solid rgba(242,242,240,0.2); padding-bottom: 16px; font-size: 19px; color: #565d66; font-weight: 300;">
+          Телефон, почта или Telegram
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #565d66;">ОРИЕНТИР ПО БЮДЖЕТУ</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <div style="border: 1px solid #2b3fe0; background: #2b3fe0; color: #f2f2f0; font-size: 14px; padding: 10px 18px;">Пока не знаю</div>
+          <div style="border: 1px solid rgba(242,242,240,0.2); color: #8a9099; font-size: 14px; padding: 10px 18px;">до 100 тыс.</div>
+          <div style="border: 1px solid rgba(242,242,240,0.2); color: #8a9099; font-size: 14px; padding: 10px 18px;">100–300 тыс.</div>
+          <div style="border: 1px solid rgba(242,242,240,0.2); color: #8a9099; font-size: 14px; padding: 10px 18px;">300 тыс. — 1 млн</div>
+          <div style="border: 1px solid rgba(242,242,240,0.2); color: #8a9099; font-size: 14px; padding: 10px 18px;">больше 1 млн</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;"><div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #565d66;">СОГЛАСИЕ</div>
+        <div style="display: flex; gap: 14px; align-items: flex-start;">
+          <div style="width: 18px; height: 18px; border: 1px solid rgba(242,242,240,0.3); flex: 0 0 auto; margin-top: 2px;"></div>
+          <div style="font-size: 14px; line-height: 1.5; color: #8a9099; max-width: 44ch;">
+            Согласен на обработку персональных данных в соответствии с <span style="color: #6c7cff; border-bottom: 1px solid #6c7cff;">политикой конфиденциальности</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 28px; margin-top: 6px;">
+        <div style="background: #2b3fe0; color: #f2f2f0; font-size: 16px; font-weight: 500; padding: 20px 44px;">Отправить заявку</div>
+        <div style="font-size: 14px; color: #565d66;">Или напрямую: <span style="color: #6c7cff;">hello@versta.studio</span></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

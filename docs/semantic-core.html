@@ -1,0 +1,617 @@
+<title>Ядро «Верста»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600&family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F4F6F3; --surface:#FFFFFF; --surface-2:#EAEEE9;
+  --ink:#121614; --ink-2:#4C5652; --ink-3:#79837E;
+  --line:#D8DDD6; --line-strong:#BEC6BC;
+  --accent:#1B6B4A; --accent-soft:#E1EFE7; --accent-ink:#125037;
+  --amber:#8A6510; --amber-soft:#F6EEDB;
+  --slate:#33566A; --slate-soft:#E4EDF2;
+  --shadow:0 1px 2px rgba(18,22,20,.05), 0 8px 24px -18px rgba(18,22,20,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1211; --surface:#161B19; --surface-2:#1D2422;
+    --ink:#E6EBE7; --ink-2:#A3AFAA; --ink-3:#7C8884;
+    --line:#28312E; --line-strong:#3A4441;
+    --accent:#5CC08F; --accent-soft:#152A21; --accent-ink:#8AD9B1;
+    --amber:#D9A441; --amber-soft:#2A2314;
+    --slate:#8FB6C9; --slate-soft:#16242B;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1211; --surface:#161B19; --surface-2:#1D2422;
+  --ink:#E6EBE7; --ink-2:#A3AFAA; --ink-3:#7C8884;
+  --line:#28312E; --line-strong:#3A4441;
+  --accent:#5CC08F; --accent-soft:#152A21; --accent-ink:#8AD9B1;
+  --amber:#D9A441; --amber-soft:#2A2314;
+  --slate:#8FB6C9; --slate-soft:#16242B;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -18px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Golos Text",-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px 96px}
+h1,h2,h3,h4{text-wrap:balance; margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+a{color:var(--accent); text-underline-offset:3px}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+.masthead{padding:64px 0 40px; border-bottom:1px solid var(--line-strong)}
+.brandline{display:flex; flex-wrap:wrap; align-items:baseline; gap:14px; margin-bottom:28px}
+.sigil{
+  font-family:"Unbounded",sans-serif; font-weight:600; font-size:13px; letter-spacing:.12em;
+  text-transform:uppercase; color:#FFFFFF; background:var(--accent);
+  padding:5px 11px; border-radius:2px;
+}
+:root[data-theme="dark"] .sigil{color:#0E1211}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sigil{color:#0E1211}}
+.brandmeta{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase}
+h1{
+  font-family:"Unbounded",sans-serif; font-weight:600; letter-spacing:-.02em;
+  font-size:clamp(30px,5.2vw,52px); line-height:1.08; max-width:19ch;
+}
+.dek{margin-top:22px; max-width:64ch; font-size:18px; color:var(--ink-2)}
+.factbar{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; margin-top:40px; background:var(--line); border:1px solid var(--line)}
+.fact{background:var(--surface); padding:16px 18px}
+.fact dt{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-bottom:6px}
+.fact dd{margin:0; font-weight:600; font-size:15px; line-height:1.35}
+
+section{padding-top:64px}
+.sec-head{display:grid; grid-template-columns:150px minmax(0,1fr); gap:32px; align-items:start; margin-bottom:26px}
+.sec-num{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); padding-top:9px; border-top:2px solid var(--accent)}
+h2{font-family:"Unbounded",sans-serif; font-weight:400; font-size:clamp(21px,2.7vw,29px); letter-spacing:-.015em; line-height:1.2}
+.sec-body{display:grid; grid-template-columns:150px minmax(0,1fr); gap:32px}
+.sec-body > .col{grid-column:2; min-width:0}
+.lede{max-width:68ch; color:var(--ink-2)}
+.lede + .lede{margin-top:14px}
+p{margin:0}
+h3.sub{font-size:17px; font-weight:700; margin-top:34px}
+@media (max-width:860px){
+  .sec-head,.sec-body{grid-template-columns:1fr; gap:14px}
+  .sec-body > .col{grid-column:1}
+  .sec-num{display:inline-block; border-top:none; border-left:2px solid var(--accent); padding:0 0 0 10px}
+}
+
+.clusters{display:flex; flex-direction:column; gap:18px; margin-top:8px}
+.cluster{background:var(--surface); border:1px solid var(--line); border-radius:3px; box-shadow:var(--shadow); overflow:hidden}
+.cl-top{display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; padding:15px 20px; border-bottom:1px solid var(--line); background:var(--surface-2)}
+.cl-id{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500; color:var(--surface); background:var(--ink); padding:3px 8px; border-radius:2px}
+.cl-name{font-weight:700; font-size:17px; flex:1 1 240px; line-height:1.3}
+.cl-url{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--slate); background:var(--slate-soft); padding:3px 8px; border-radius:2px; overflow-wrap:anywhere}
+.chip{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:2px; white-space:nowrap; font-weight:500}
+.p1{background:var(--accent); color:#FFFFFF}
+:root[data-theme="dark"] .p1{color:#0E1211}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .p1{color:#0E1211}}
+.p2{background:var(--accent-soft); color:var(--accent-ink); border:1px solid var(--accent)}
+.p3{background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber)}
+.cl-body{padding:4px 20px 18px}
+.scroll{overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:14.5px; min-width:560px}
+th,td{text-align:left; padding:9px 14px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); font-weight:500; white-space:nowrap}
+td.num{font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--ink-2)}
+td.kw{font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+.note{margin-top:14px; font-size:14.5px; color:var(--ink-2); border-left:2px solid var(--accent); padding-left:14px; max-width:72ch}
+.note b{color:var(--ink)}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:3px; box-shadow:var(--shadow); padding:4px 20px; margin-top:18px}
+.panel table{min-width:660px}
+
+ul.ticks{list-style:none; padding:0; margin:16px 0 0; display:flex; flex-direction:column; gap:10px; max-width:74ch}
+ul.ticks li{padding-left:24px; position:relative; color:var(--ink-2)}
+ul.ticks li::before{content:"—"; position:absolute; left:0; color:var(--accent); font-weight:600}
+ul.ticks li b{color:var(--ink)}
+
+.warn{background:var(--amber-soft); border:1px solid var(--amber); border-radius:3px; padding:18px 22px; margin-top:20px}
+.warn h4{font-size:15px; margin-bottom:8px; color:var(--ink)}
+.warn p{color:var(--ink-2); font-size:15px; max-width:72ch}
+.warn p + p{margin-top:10px}
+
+.steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-top:18px}
+.step{background:var(--surface); padding:18px 20px}
+.step .mono{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px}
+.step h4{font-size:16px; margin-bottom:8px}
+.step p{font-size:14.5px; color:var(--ink-2)}
+
+code{font-family:"IBM Plex Mono",monospace; font-size:.9em; background:var(--surface-2); padding:1px 5px; border-radius:2px}
+footer{margin-top:76px; padding-top:24px; border-top:1px solid var(--line-strong); font-size:14px; color:var(--ink-3); max-width:72ch}
+</style>
+
+<div class="wrap">
+<header class="masthead">
+  <div class="brandline">
+    <span class="sigil">Верста</span>
+    <span class="brandmeta">Семантическое ядро · Москва · этап 1 из 3</span>
+  </div>
+  <h1>Ядро и контент-план студии «Верста»</h1>
+  <p class="dek">Веб-студия полного цикла: проекты с нуля и подхват чужих кодовых баз. Ниже — семантическое ядро под Яндекс и Google, структура рубрик, карта релевантности «кластер → URL → title/H1» и ТЗ на тексты. Сайт делаем на Next.js (App Router) + React, форма заявок с антиспамом и согласием по 152-ФЗ.</p>
+  <dl class="factbar">
+    <div class="fact"><dt>Регион</dt><dd>Москва + Россия</dd></div>
+    <div class="fact"><dt>Кластеров</dt><dd>14 коммерческих</dd></div>
+    <div class="fact"><dt>Посадочных</dt><dd>21 страница</dd></div>
+    <div class="fact"><dt>Статей в плане</dt><dd>24 за 6 месяцев</dd></div>
+    <div class="fact"><dt>Первый трафик</dt><dd>2–4 месяца</dd></div>
+  </dl>
+</header>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 · Стратегия</div>
+    <h2>Где мы реально можем выиграть выдачу</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Запрос «разработка сайтов Москва» — это топ, забитый агрегаторами (Ruward, Workspace, Тэглайн), студиями с десятилетней историей ссылок и контекстом на 300 ₽ за клик. Заходить туда лоб в лоб бессмысленно: молодой домен там не увидит первую страницу и через год.</p>
+    <p class="lede">Поэтому ядро строится вокруг второй половины позиционирования — <b>работы с уже существующими проектами</b>. «Доработка сайта», «поддержка сайта», «перенос сайта на другой движок», «аудит кода», «интеграция с 1С», «нужен разработчик на проект» — это запросы с горячим интентом, слабой конкуренцией и очень коротким циклом сделки: у человека уже есть продукт и уже болит. Именно они дают первые заявки на горизонте 2–4 месяцев и финансируют долгий штурм высокочастотки.</p>
+    <p class="lede">Разработка с нуля («корпоративный сайт», «интернет-магазин», «MVP») закрывается полноценными посадочными сразу, но воспринимается как игра вдолгую: они копят поведенческие и ссылочный вес, пока трафик идёт с «сервисных» кластеров и блога.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>Волна</th><th>Кластеры</th><th>Логика</th><th>Ожидаемый эффект</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">Волна 1<br><span class="mono" style="font-size:12px;color:var(--ink-3)">мес. 1–2</span></td><td>K07, K08, K09, K10, K11</td><td>Низкая конкуренция, горячий интент, длинный хвост без гео</td><td>Первые заявки, 150–400 визитов/мес</td></tr>
+          <tr><td class="kw">Волна 2<br><span class="mono" style="font-size:12px;color:var(--ink-3)">мес. 2–4</span></td><td>K02, K03, K04, K05, K13</td><td>Средняя конкуренция, высокий чек, нужны кейсы и цены</td><td>Заявки на разработку с нуля</td></tr>
+          <tr><td class="kw">Волна 3<br><span class="mono" style="font-size:12px;color:var(--ink-3)">мес. 3–9</span></td><td>K01, K06, K12, блог</td><td>ВЧ-конкуренция, берётся ссылками, PF и информационным охватом</td><td>Рост видимости, брендовые запросы</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="warn">
+      <h4>Про цифры частотности в таблицах ниже</h4>
+      <p>Все значения — <b>оценочные ориентиры порядка величины</b> по региону Москва, а не выгрузка. Реальную частоту снимайте в Wordstat в режиме <code>"!запрос"</code> с выбранным регионом (или через Key Collector / Wordstat API), прежде чем закладывать их в KPI: сезонность и переоценка Яндексом сдвигают числа в разы. Приоритеты кластеров при этом не поменяются — они держатся на конкуренции и интенте, а не на абсолютной частоте.</p>
+    </div>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 · Ядро</div>
+    <h2>Коммерческие кластеры</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Один кластер = одна посадочная страница. Запросы внутри кластера объединены по общей выдаче и одному интенту, поэтому их нельзя растаскивать по разным URL — страницы начнут каннибализировать друг друга.</p>
+
+    <div class="clusters">
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K01</span><span class="cl-name">Разработка сайтов — головной кластер</span><span class="cl-url">/</span><span class="chip p3">волна 3</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка сайтов москва</td><td class="num">5 000–9 000</td><td>коммерческий</td><td>очень высокая</td></tr>
+            <tr><td class="kw">создание сайтов под ключ</td><td class="num">2 000–4 000</td><td>коммерческий</td><td>очень высокая</td></tr>
+            <tr><td class="kw">заказать разработку сайта</td><td class="num">800–1 500</td><td>транзакционный</td><td>высокая</td></tr>
+            <tr><td class="kw">веб студия москва</td><td class="num">600–1 200</td><td>навигационный</td><td>высокая</td></tr>
+            <tr><td class="kw">студия разработки сайтов</td><td class="num">400–900</td><td>коммерческий</td><td>высокая</td></tr>
+            <tr><td class="kw">разработка сайтов и веб приложений</td><td class="num">200–500</td><td>коммерческий</td><td>средняя</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Роль страницы:</b> витрина + распределитель веса по услугам. Не пытаемся вписать сюда все ключи — главная берёт бренд, ВЧ-«разработка сайтов москва» и служит хабом внутренней перелинковки на все 11 услуг.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K02</span><span class="cl-name">Корпоративные сайты</span><span class="cl-url">/uslugi/korporativnye-sajty/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка корпоративного сайта</td><td class="num">700–1 400</td><td>коммерческий</td><td>высокая</td></tr>
+            <tr><td class="kw">создание корпоративного сайта цена</td><td class="num">300–600</td><td>транзакционный</td><td>средняя</td></tr>
+            <tr><td class="kw">сайт для компании заказать</td><td class="num">200–450</td><td>транзакционный</td><td>средняя</td></tr>
+            <tr><td class="kw">разработка сайта для производства</td><td class="num">100–250</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">корпоративный портал разработка</td><td class="num">150–350</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">многостраничный сайт под ключ</td><td class="num">80–180</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Хвост под отрасли</b> («сайт для производства», «для юридической компании», «для медцентра») уводим не в отдельные doorway-страницы, а в блоки кейсов на этой же странице + отраслевые статьи блога со ссылкой сюда. Отдельные гео/отраслевые клоны Яндекс считает малополезными страницами.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K03</span><span class="cl-name">Интернет-магазины и e-commerce</span><span class="cl-url">/uslugi/internet-magazin/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка интернет магазина</td><td class="num">1 500–3 000</td><td>коммерческий</td><td>очень высокая</td></tr>
+            <tr><td class="kw">создание интернет магазина под ключ цена</td><td class="num">500–1 000</td><td>транзакционный</td><td>высокая</td></tr>
+            <tr><td class="kw">разработка маркетплейса</td><td class="num">200–450</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">интернет магазин с интеграцией 1с</td><td class="num">120–300</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">перенос интернет магазина на другую платформу</td><td class="num">80–200</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">разработка b2b интернет магазина</td><td class="num">60–150</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Точка входа с низкой конкуренцией:</b> «интеграция с 1С», «B2B-кабинет с индивидуальными ценами», «перенос с Битрикса». Эти подтемы выносим в отдельные H2 на странице и в связанные статьи — они приводят клиентов с бюджетом, минуя ВЧ-мясорубку.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K04</span><span class="cl-name">Веб-сервисы, личные кабинеты, SaaS</span><span class="cl-url">/uslugi/veb-servisy/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка веб приложения</td><td class="num">500–1 000</td><td>коммерческий</td><td>высокая</td></tr>
+            <tr><td class="kw">разработка веб сервиса на заказ</td><td class="num">150–350</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">разработка saas платформы</td><td class="num">100–250</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">личный кабинет на сайте разработка</td><td class="num">150–300</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">разработка crm под ключ</td><td class="num">200–500</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">внутренний портал для сотрудников разработка</td><td class="num">50–120</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Самый высокий средний чек в ядре.</b> На странице обязателен блок про архитектуру, нагрузку, роли и права — сюда приходят технически грамотные заказчики, и общие маркетинговые формулировки их отталкивают.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K05</span><span class="cl-name">MVP и стартапы</span><span class="cl-url">/uslugi/mvp/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка mvp</td><td class="num">250–500</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">mvp для стартапа цена</td><td class="num">80–200</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">заказать разработку прототипа</td><td class="num">60–150</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">быстрая разработка мвп за месяц</td><td class="num">40–100</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">техническая команда для стартапа</td><td class="num">50–120</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Кластер небольшой, но конверсионный и почти без конкуренции со стороны крупных студий: им такие бюджеты неинтересны. Ключевой блок на странице — фиксированные сроки и вилка цены; аудитория принимает решение быстро.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K06</span><span class="cl-name">Лендинги и промо-страницы</span><span class="cl-url">/uslugi/landing/</span><span class="chip p3">волна 3</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">разработка лендинга</td><td class="num">1 000–2 000</td><td>коммерческий</td><td>очень высокая</td></tr>
+            <tr><td class="kw">заказать лендинг под ключ</td><td class="num">400–800</td><td>транзакционный</td><td>высокая</td></tr>
+            <tr><td class="kw">лендинг для рекламы разработка</td><td class="num">100–250</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">лендинг с анимацией на заказ</td><td class="num">40–100</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Осторожно с приоритетом:</b> кластер размыт фрилансом и конструкторами, средний чек низкий. Держим страницу как «вход» в воронку и апселл на разработку, но SEO-ресурсы туда не вкладываем. Отличается только связкой «лендинг + сквозная аналитика + скорость» — на этом и строим текст.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K07</span><span class="cl-name">Доработка чужих проектов</span><span class="cl-url">/uslugi/dorabotka-sajta/</span><span class="chip p1">волна 1 · ядро роста</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">доработка сайта</td><td class="num">400–900</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">доработка существующего сайта</td><td class="num">150–300</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">внести правки на сайт заказать</td><td class="num">100–250</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">доработка чужого кода</td><td class="num">50–120</td><td>коммерческий</td><td>очень низкая</td></tr>
+            <tr><td class="kw">рефакторинг legacy проекта</td><td class="num">40–90</td><td>коммерческий</td><td>очень низкая</td></tr>
+            <tr><td class="kw">перенос сайта на другой движок</td><td class="num">100–220</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">подхватить проект после другого разработчика</td><td class="num">30–80</td><td>транзакционный</td><td>очень низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Главный кластер первой волны.</b> Интент максимально горячий: подрядчик пропал, код не поддерживается, релиз горит. Обязательные блоки страницы — «берём проект даже без документации», «аудит перед оценкой», «работаем по часам или спринтами», «что делаем в первые 3 дня». Здесь молодой сайт может выйти в топ-10 за 6–10 недель.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K08</span><span class="cl-name">Поддержка и сопровождение</span><span class="cl-url">/uslugi/podderzhka-sajta/</span><span class="chip p1">волна 1</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">техническая поддержка сайта</td><td class="num">500–1 000</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">сопровождение сайта цена</td><td class="num">200–400</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">абонентское обслуживание сайта москва</td><td class="num">150–350</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">администрирование сайта услуги</td><td class="num">100–250</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">договор на поддержку сайта</td><td class="num">80–200</td><td>информационный</td><td>низкая</td></tr>
+            <tr><td class="kw">поддержка сайта на битрикс</td><td class="num">100–200</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Кластер с повторяющейся выручкой.</b> Ставим на странице три тарифа абонентки с ценами и SLA — прайс прямо на посадочной сильно поднимает коммерческую релевантность в Яндексе и отсекает нецелевые заявки.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K09</span><span class="cl-name">Аудит и ускорение</span><span class="cl-url">/uslugi/audit-i-uskorenie/</span><span class="chip p1">волна 1</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">технический аудит сайта</td><td class="num">300–700</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">аудит кода сайта</td><td class="num">50–120</td><td>коммерческий</td><td>очень низкая</td></tr>
+            <tr><td class="kw">ускорение загрузки сайта услуга</td><td class="num">150–350</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">оптимизация core web vitals</td><td class="num">60–150</td><td>смешанный</td><td>низкая</td></tr>
+            <tr><td class="kw">почему сайт долго грузится</td><td class="num">200–500</td><td>информационный</td><td>средняя</td></tr>
+            <tr><td class="kw">сайт медленно работает что делать</td><td class="num">150–400</td><td>информационный</td><td>средняя</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Лучший вход в воронку.</b> Информационные запросы про медленный сайт приводят людей, которым через две недели нужна доработка (K07). Делаем бесплатный экспресс-аудит как лид-магнит с формой — это отдельная цель в Метрике.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K10</span><span class="cl-name">Интеграции: 1С, CRM, платежи, API</span><span class="cl-url">/uslugi/integracii/</span><span class="chip p1">волна 1</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">интеграция сайта с 1с</td><td class="num">300–700</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">интеграция сайта с amocrm</td><td class="num">150–350</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">интеграция с битрикс24 заказать</td><td class="num">150–300</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">разработка api интеграции</td><td class="num">100–250</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">подключить эквайринг на сайт</td><td class="num">200–450</td><td>смешанный</td><td>средняя</td></tr>
+            <tr><td class="kw">выгрузка товаров из 1с на сайт</td><td class="num">100–200</td><td>смешанный</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Кластер большой и естественно дробится: если по Wordstat подтвердится частота, «интеграция с 1С» и «интеграция с CRM» разводим на две дочерние страницы <code>/uslugi/integracii/1c/</code> и <code>/uslugi/integracii/crm/</code>. Пока держим одну со смысловыми H2 и якорями.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K11</span><span class="cl-name">Выделенная команда и аутстаффинг</span><span class="cl-url">/uslugi/vydelennaya-komanda/</span><span class="chip p1">волна 1</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">аутстаффинг разработчиков</td><td class="num">200–500</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">выделенная команда разработки</td><td class="num">100–250</td><td>коммерческий</td><td>низкая</td></tr>
+            <tr><td class="kw">нанять команду разработчиков на проект</td><td class="num">80–200</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">разработчик на аутсорсе цена час</td><td class="num">60–150</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">усилить команду разработки</td><td class="num">30–80</td><td>коммерческий</td><td>очень низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Аудитория — CTO и продакты, а не малый бизнес. Тон текста другой: ставки в час, скорость подключения, NDA, формат отчётности, тестовый спринт. Здесь же честно закрываем вопрос «а вас точно хватит на нас» — размером пула и ротацией.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K12</span><span class="cl-name">Редизайн</span><span class="cl-url">/uslugi/redesign/</span><span class="chip p3">волна 3</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">редизайн сайта</td><td class="num">400–900</td><td>коммерческий</td><td>средняя</td></tr>
+            <tr><td class="kw">обновить дизайн сайта заказать</td><td class="num">100–250</td><td>транзакционный</td><td>низкая</td></tr>
+            <tr><td class="kw">редизайн сайта цена</td><td class="num">150–300</td><td>транзакционный</td><td>средняя</td></tr>
+            <tr><td class="kw">переделать старый сайт</td><td class="num">80–180</td><td>коммерческий</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Обязательный блок — «редизайн без потери позиций»: сохранение URL, редиректы, перенос микроразметки. Это главный страх заказчика с трафиком, и он же наш аргумент против дизайн-студий без SEO-компетенции.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K13</span><span class="cl-name">Цены и расчёт стоимости</span><span class="cl-url">/price/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">сколько стоит разработка сайта</td><td class="num">800–1 800</td><td>смешанный</td><td>высокая</td></tr>
+            <tr><td class="kw">стоимость создания сайта москва</td><td class="num">300–700</td><td>транзакционный</td><td>высокая</td></tr>
+            <tr><td class="kw">цена разработки интернет магазина</td><td class="num">200–500</td><td>транзакционный</td><td>средняя</td></tr>
+            <tr><td class="kw">калькулятор стоимости сайта</td><td class="num">150–400</td><td>транзакционный</td><td>средняя</td></tr>
+            <tr><td class="kw">сколько стоит поддержка сайта в месяц</td><td class="num">100–250</td><td>смешанный</td><td>низкая</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note"><b>Самая недооценённая страница.</b> Реальные вилки цен с указанием, что входит и от чего зависит, дают и трафик, и рост коммерческих факторов. Интерактивный калькулятор с отправкой результата на почту — вторая по значимости точка сбора заявок после формы контактов.</p></div>
+      </article>
+
+      <article class="cluster">
+        <div class="cl-top"><span class="cl-id">K14</span><span class="cl-name">Доверие: кейсы, команда, отзывы</span><span class="cl-url">/cases/ · /about/ · /reviews/</span><span class="chip p2">волна 2</span></div>
+        <div class="cl-body"><div class="scroll"><table>
+          <thead><tr><th>Запрос</th><th>Оценка «!», Москва</th><th>Интент</th><th>Конкуренция</th></tr></thead>
+          <tbody>
+            <tr><td class="kw">кейсы разработки сайтов</td><td class="num">100–250</td><td>информационный</td><td>низкая</td></tr>
+            <tr><td class="kw">портфолио веб студии</td><td class="num">80–200</td><td>навигационный</td><td>низкая</td></tr>
+            <tr><td class="kw">верста студия отзывы</td><td class="num">брендовый</td><td>навигационный</td><td>—</td></tr>
+            <tr><td class="kw">как выбрать студию разработки</td><td class="num">150–350</td><td>информационный</td><td>средняя</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Трафика мало, вес — огромный. Кейс = отдельный URL <code>/cases/[slug]/</code> с задачей, ограничениями, решением, метриками и ссылкой на профильную услугу. Это главный источник внутренних ссылок на коммерческие страницы и основной аргумент в переговорах.</p></div>
+      </article>
+
+    </div>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 · Структура</div>
+    <h2>Рубрикатор и карта релевантности</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Глубина вложенности — максимум три клика от главной. URL транслитом, без дат и параметров, всегда со слешем на конце и в нижнем регистре; выбранный формат фиксируем один раз и держим редиректами, иначе получаем дубли.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>URL</th><th>Кластер</th><th>Title (до 60 симв.)</th><th>H1</th><th>Объём</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">/</td><td>K01</td><td>Разработка сайтов и веб-сервисов в Москве — студия «Верста»</td><td>Разрабатываем сайты и веб-сервисы — и подхватываем чужие проекты</td><td class="num">2 500</td></tr>
+          <tr><td class="kw">/uslugi/</td><td>хаб</td><td>Услуги веб-студии «Верста» — разработка, доработка, поддержка</td><td>Услуги студии</td><td class="num">1 200</td></tr>
+          <tr><td class="kw">/uslugi/korporativnye-sajty/</td><td>K02</td><td>Разработка корпоративного сайта под ключ — цены и сроки</td><td>Разработка корпоративных сайтов</td><td class="num">4 000</td></tr>
+          <tr><td class="kw">/uslugi/internet-magazin/</td><td>K03</td><td>Разработка интернет-магазина под ключ в Москве</td><td>Разработка интернет-магазинов</td><td class="num">4 500</td></tr>
+          <tr><td class="kw">/uslugi/veb-servisy/</td><td>K04</td><td>Разработка веб-приложений и SaaS-сервисов на заказ</td><td>Веб-сервисы, личные кабинеты и SaaS</td><td class="num">4 000</td></tr>
+          <tr><td class="kw">/uslugi/mvp/</td><td>K05</td><td>Разработка MVP для стартапа за 6–10 недель</td><td>MVP: от идеи до работающего продукта</td><td class="num">3 000</td></tr>
+          <tr><td class="kw">/uslugi/landing/</td><td>K06</td><td>Разработка лендинга под ключ — быстрый и конверсионный</td><td>Лендинги и промо-страницы</td><td class="num">2 500</td></tr>
+          <tr><td class="kw">/uslugi/dorabotka-sajta/</td><td>K07</td><td>Доработка сайта: подхватим чужой код и доведём проект</td><td>Доработка существующих сайтов и сервисов</td><td class="num">4 500</td></tr>
+          <tr><td class="kw">/uslugi/podderzhka-sajta/</td><td>K08</td><td>Техническая поддержка сайта — тарифы, SLA, цены</td><td>Поддержка и сопровождение сайтов</td><td class="num">3 500</td></tr>
+          <tr><td class="kw">/uslugi/audit-i-uskorenie/</td><td>K09</td><td>Технический аудит и ускорение сайта — Core Web Vitals</td><td>Аудит кода и ускорение сайта</td><td class="num">3 500</td></tr>
+          <tr><td class="kw">/uslugi/integracii/</td><td>K10</td><td>Интеграция сайта с 1С, CRM и платёжными системами</td><td>Интеграции: 1С, CRM, платежи, внешние API</td><td class="num">3 500</td></tr>
+          <tr><td class="kw">/uslugi/vydelennaya-komanda/</td><td>K11</td><td>Выделенная команда разработки и аутстаффинг</td><td>Выделенная команда под ваш продукт</td><td class="num">3 000</td></tr>
+          <tr><td class="kw">/uslugi/redesign/</td><td>K12</td><td>Редизайн сайта без потери позиций и трафика</td><td>Редизайн сайта</td><td class="num">3 000</td></tr>
+          <tr><td class="kw">/price/</td><td>K13</td><td>Сколько стоит разработка сайта — цены студии «Верста»</td><td>Цены и расчёт стоимости</td><td class="num">2 500</td></tr>
+          <tr><td class="kw">/cases/</td><td>K14</td><td>Кейсы разработки сайтов и веб-сервисов</td><td>Кейсы</td><td class="num">1 000</td></tr>
+          <tr><td class="kw">/cases/[slug]/</td><td>K14</td><td>{Название проекта} — кейс разработки {тип проекта}</td><td>{Название проекта}</td><td class="num">2 000</td></tr>
+          <tr><td class="kw">/about/</td><td>K14</td><td>О студии «Верста»: команда, процесс, принципы</td><td>О студии</td><td class="num">2 500</td></tr>
+          <tr><td class="kw">/about/process/</td><td>K14</td><td>Как мы ведём проекты: этапы, отчётность, гарантии</td><td>Процесс работы</td><td class="num">2 000</td></tr>
+          <tr><td class="kw">/reviews/</td><td>K14</td><td>Отзывы клиентов о студии «Верста»</td><td>Отзывы</td><td class="num">800</td></tr>
+          <tr><td class="kw">/contacts/</td><td>K01</td><td>Контакты студии «Верста» — Москва</td><td>Контакты</td><td class="num">600</td></tr>
+          <tr><td class="kw">/blog/</td><td>инфо</td><td>Блог студии «Верста» о разработке и поддержке сайтов</td><td>Блог</td><td class="num">600</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <p class="note"><b>Description</b> не влияет на ранжирование напрямую, но управляет CTR из выдачи — а поведенческие в Яндексе влияют сильно. Формула: суть услуги + конкретика (сроки, цена «от», формат) + действие. Пример для K07: «Дорабатываем сайты и сервисы, написанные не нами: разбираемся в коде без документации, оцениваем задачу за 2 дня, работаем спринтами или по часам. Бесплатный аудит перед стартом.» Длина 150–170 символов, ключ в первых 90.</p>
+
+    <h3 class="sub">Внутренняя перелинковка</h3>
+    <ul class="ticks">
+      <li><b>Главная → все 11 услуг</b> — сквозной блок с описаниями, не голым списком ссылок.</li>
+      <li><b>Услуга → 2–3 смежные услуги</b> внизу страницы: доработка ↔ поддержка ↔ аудит образуют естественное кольцо.</li>
+      <li><b>Кейс → услуга</b> — обязательная ссылка контекстным анкором («делали в рамках доработки интернет-магазина»).</li>
+      <li><b>Статья → услуга</b> — одна-две ссылки по смыслу; сквозной CTA-баннер в статье ссылкой не считается и вес почти не передаёт.</li>
+      <li><b>Хлебные крошки на всех страницах</b> с разметкой <code>BreadcrumbList</code> — дают дополнительные ссылки вверх по иерархии.</li>
+    </ul>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 · Тексты</div>
+    <h2>ТЗ на копирайтинг</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Единый шаблон для всех страниц услуг. Порядок блоков менять можно, но первые три экрана трогать нельзя: там решается, останется человек или уйдёт назад в выдачу — а именно это Яндекс считывает как поведенческий сигнал.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>Блок</th><th>Что в нём</th><th>SEO-роль</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">H1 + подзаголовок</td><td>Точное вхождение основного ключа + конкретное обещание в одну строку</td><td>Главный сигнал релевантности</td></tr>
+          <tr><td class="kw">Первый абзац, 400–600 симв.</td><td>Кому, что делаем, за какой срок, от какой цены. Без «динамично развивающейся компании»</td><td>Ключ в первых 100 символах, LSI</td></tr>
+          <tr><td class="kw">Форма или CTA на первом экране</td><td>Три поля максимум: задача, контакт, согласие</td><td>Коммерческий фактор, конверсия</td></tr>
+          <tr><td class="kw">Что входит в услугу</td><td>6–9 пунктов конкретикой, без «индивидуального подхода»</td><td>Хвостовые запросы, вхождения LSI</td></tr>
+          <tr><td class="kw">Цены и вилки</td><td>Минимум три варианта с составом работ и сроками</td><td>Сильнейший коммерческий фактор Яндекса</td></tr>
+          <tr><td class="kw">Процесс по шагам</td><td>4–6 этапов с длительностью и артефактом на выходе</td><td>Снятие возражений, время на странице</td></tr>
+          <tr><td class="kw">2–3 релевантных кейса</td><td>Задача → ограничение → решение → измеримый результат</td><td>Перелинковка, доверие</td></tr>
+          <tr><td class="kw">Стек и подход</td><td>Коротко, 3–4 предложения. Клиент покупает результат, а не список технологий</td><td>Экспертность (E-E-A-T)</td></tr>
+          <tr><td class="kw">FAQ, 5–8 вопросов</td><td>Реальные вопросы из переписки, а не выдуманные</td><td>Разметка <code>FAQPage</code>, голосовой поиск, хвост</td></tr>
+          <tr><td class="kw">Финальная форма</td><td>С альтернативой: телефон, Telegram, почта</td><td>Коммерческий фактор: способы связи</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <h3 class="sub">Правила языка</h3>
+    <ul class="ticks">
+      <li><b>Плотность ключа 2–4 %</b>, точное вхождение — в H1, первом абзаце и одном H2. Дальше — синонимы и словоформы. Переспам в Яндексе ловится «Баден-Баденом» и лечится месяцами.</li>
+      <li><b>Ни одного предложения, которое подошло бы любой другой студии.</b> Это одновременно и правило копирайтинга, и защита от алгоритмов, отсеивающих шаблонные тексты.</li>
+      <li><b>Цифры вместо прилагательных:</b> не «быстро запускаем», а «MVP за 6–10 недель, первый демо-билд на третьей неделе».</li>
+      <li><b>Мы-тон вместо я-тона</b> по всему сайту: «команда», «наши разработчики», «созвон с аналитиком и тимлидом». Внутренне это может быть один человек с подрядчиками — но тогда в текстах не должно быть проверяемых заявлений о штате.</li>
+      <li><b>Абзац — максимум 4 строки.</b> Мобильных больше половины, стена текста убивает дочитывания.</li>
+    </ul>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 · Блог</div>
+    <h2>Контент-план на 6 месяцев</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Две статьи в месяц, каждая закрывает информационный запрос и ведёт в конкретную услугу. Приоритет — темы, где мы отвечаем на вопрос, который человек задаёт <em>перед</em> тем, как искать подрядчика.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>Мес.</th><th>Тема</th><th>Ключевой запрос</th><th>Ведёт в</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td class="kw">Сколько стоит разработка сайта в 2026 году: разбор сметы по строкам</td><td>сколько стоит разработка сайта</td><td>K13</td></tr>
+          <tr><td class="num">1</td><td class="kw">Подрядчик пропал: как забрать доступы, код и домен</td><td>разработчик пропал что делать</td><td>K07</td></tr>
+          <tr><td class="num">2</td><td class="kw">ТЗ на разработку сайта: структура и готовый шаблон</td><td>тз на разработку сайта образец</td><td>K02</td></tr>
+          <tr><td class="num">2</td><td class="kw">Почему сайт медленно грузится: 12 причин по убыванию частоты</td><td>почему сайт долго грузится</td><td>K09</td></tr>
+          <tr><td class="num">3</td><td class="kw">Как передать проект новому разработчику без потерь</td><td>передать проект другому разработчику</td><td>K07</td></tr>
+          <tr><td class="num">3</td><td class="kw">Готовая CMS или своя разработка: честная таблица сравнения</td><td>битрикс или самописный сайт</td><td>K04</td></tr>
+          <tr><td class="num">4</td><td class="kw">Интеграция сайта с 1С: варианты обмена и типовые грабли</td><td>интеграция сайта с 1с</td><td>K10</td></tr>
+          <tr><td class="num">4</td><td class="kw">Договор на разработку сайта: что проверить до подписи</td><td>договор на разработку сайта</td><td>K14</td></tr>
+          <tr><td class="num">5</td><td class="kw">Core Web Vitals простыми словами: что мерить и до каких значений</td><td>core web vitals что это</td><td>K09</td></tr>
+          <tr><td class="num">5</td><td class="kw">Редизайн без потери трафика: чек-лист переезда</td><td>редизайн сайта без потери позиций</td><td>K12</td></tr>
+          <tr><td class="num">6</td><td class="kw">Сколько стоит поддержка сайта в месяц и что входит в тариф</td><td>стоимость поддержки сайта</td><td>K08</td></tr>
+          <tr><td class="num">6</td><td class="kw">Как выбрать студию разработки: 9 вопросов, которые всё покажут</td><td>как выбрать студию разработки</td><td>K14</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <p class="note">Дальше — по фактическим данным. Через 3 месяца в Яндекс.Вебмастере и Search Console появятся реальные запросы, по которым сайт уже показывается на позициях 11–30: дописать под них страницы дешевле и быстрее, чем угадывать новые темы. Оставшиеся 12 статей из плана добираем оттуда.</p>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 · Техника</div>
+    <h2>Что закладываем в Next.js сразу</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Всё, что ниже, дешевле сделать на старте, чем чинить после индексации. Это же список того, что я реализую на этапе 3.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>Что</th><th>Как в Next.js App Router</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">Серверный рендеринг всех посадочных</td><td>Серверные компоненты по умолчанию, статическая генерация услуг, <code>revalidate</code> для блога и кейсов. Ни один SEO-текст не приезжает на клиенте</td></tr>
+          <tr><td class="kw">Мета-теги</td><td><code>generateMetadata</code> в каждом сегменте: title, description, canonical, OG и Twitter-карточки</td></tr>
+          <tr><td class="kw">Карта сайта и robots</td><td><code>app/sitemap.ts</code> и <code>app/robots.ts</code> — генерируются из того же источника данных, что и страницы, поэтому не рассинхронизируются</td></tr>
+          <tr><td class="kw">Микроразметка</td><td>JSON-LD: <code>Organization</code> и <code>ProfessionalService</code> на главной, <code>Service</code> на услугах, <code>BreadcrumbList</code> везде, <code>FAQPage</code> в блоках FAQ, <code>Article</code> в блоге</td></tr>
+          <tr><td class="kw">Скорость</td><td><code>next/font</code> с сабсетом кириллицы, <code>next/image</code> в AVIF/WebP, анимации только на transform и opacity. Бюджет: LCP менее 2,5 с на 4G, CLS менее 0,1</td></tr>
+          <tr><td class="kw">Аналитика</td><td>Яндекс.Метрика с вебвизором и целями на каждую форму, Google Analytics, Вебмастер и Search Console — до выкладки в прод</td></tr>
+          <tr><td class="kw">Форма заявок</td><td>Server Action + валидация на сервере, honeypot и rate-limit по IP, письмо на почту и дубль в Telegram, лог заявок в БД</td></tr>
+          <tr><td class="kw">152-ФЗ</td><td>Обязательный чекбокс согласия со ссылкой на политику конфиденциальности, страница политики, уведомление в Роскомнадзор об обработке персданных, хранение на серверах в РФ</td></tr>
+          <tr><td class="kw">Доступность</td><td>Семантические теги, видимый фокус, контраст от 4.5:1, уважение к <code>prefers-reduced-motion</code>. Влияет и на поведенческие, и на репутацию студии</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <h3 class="sub">Коммерческие факторы Яндекса — отдельный чек-лист</h3>
+    <p class="lede">Для коммерческой выдачи Яндекс оценивает не только текст. Это те пункты, отсутствие которых удерживает сайт в третьем десятке при идеальной семантике:</p>
+    <ul class="ticks">
+      <li>Цены на сайте — хотя бы вилками «от» и составом работ.</li>
+      <li>Несколько способов связи: телефон, почта, Telegram, форма, мессенджер.</li>
+      <li>Реквизиты в подвале: ИНН, ОГРН(ИП), юридический адрес.</li>
+      <li>Страница команды с именами, ролями и фотографиями живых людей.</li>
+      <li>Портфолио с детальными кейсами, а не сеткой скриншотов.</li>
+      <li>Договор или оферта, доступные для скачивания.</li>
+      <li>Гарантии и условия правок, зафиксированные текстом.</li>
+      <li>Карточка организации в Яндекс.Бизнесе, связанная с сайтом.</li>
+    </ul>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">07 · Риски</div>
+    <h2>Где именно можно «приукрасить», а где нельзя</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <p class="lede">Ты просил представить студию как команду и местами приукрасить — это нормальная практика позиционирования, и я так и напишу тексты. Но у приукрашивания есть граница, за которой начинаются проверяемые заявления и санкции, поэтому разделю явно.</p>
+
+    <div class="panel">
+      <div class="scroll"><table>
+        <thead><tr><th>Можно</th><th>Нельзя</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">Писать «мы», «команда», «наши разработчики» — юридически это никого не обманывает</td><td>Называть конкретную численность штата и годы работы, если они не соответствуют действительности</td></tr>
+          <tr><td class="kw">Анонимные кейсы: «интернет-магазин отделочных материалов, 40 000 SKU»</td><td>Логотипы и названия компаний, которые не были вашими клиентами — это прямой юридический риск</td></tr>
+          <tr><td class="kw">Показывать типовые ориентиры результата, помечая их как ориентиры</td><td>Выдавать выдуманные метрики за достигнутые в конкретном проекте</td></tr>
+          <tr><td class="kw">Оформленный раздел отзывов, пока пустой или с реальными первыми</td><td>Разметка <code>Review</code> и <code>AggregateRating</code> на выдуманных отзывах — Google снимает сниппет и штрафует домен</td></tr>
+          <tr><td class="kw">Фото команды из фотостока как атмосферный визуал</td><td>Стоковые лица с выдуманными именами и должностями на странице «Команда»</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="warn">
+      <h4>Практический вывод</h4>
+      <p>Делаем сайт, который выглядит как студия из десяти человек: тон, процессы, роли, оформление, глубина кейсов. Но каждое проверяемое утверждение — численность, клиенты, цифры результата, отзывы — либо правдиво, либо сформулировано так, что не является утверждением о факте.</p>
+      <p>На старте это ничего не стоит: первые кейсы делаются из реальных проектов в обезличенном виде, а раздел отзывов заполняется после первых сделок. Микроразметку отзывов включаем тогда же — до этого она остаётся закомментированной в коде.</p>
+    </div>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">08 · Дальше</div>
+    <h2>Порядок работ</h2>
+  </div>
+  <div class="sec-body"><div class="col">
+    <div class="steps">
+      <div class="step"><span class="mono">Этап 1 · сейчас</span><h4>Семантика и план</h4><p>Этот документ. Нужно твоё «ок» по рубрикатору и приоритетам волн — от этого зависит, какие страницы пишутся первыми.</p></div>
+      <div class="step"><span class="mono">Этап 2 · дальше</span><h4>Тексты и дизайн-система</h4><p>Полные тексты 11 посадочных по шаблону из раздела 04, палитра, типографика, сценарии анимаций, структура экранов.</p></div>
+      <div class="step"><span class="mono">Этап 3 · финал</span><h4>Код и запуск</h4><p>Next.js + React, все страницы, форма заявок с антиспамом и уведомлениями, sitemap, JSON-LD, метрика. Запускаю и проверяю локально.</p></div>
+    </div>
+
+    <h3 class="sub">Что нужно от тебя перед этапом 2</h3>
+    <ul class="ticks">
+      <li><b>Название и домен.</b> «Верста» — рабочая версия, меняется в одну команду по всему проекту.</li>
+      <li><b>Реальные вилки цен</b> по каждой услуге. Без них не пишутся ни прайс, ни коммерческие блоки, а это половина ранжирования в коммерческой выдаче.</li>
+      <li><b>2–3 реальных проекта</b> в любом виде, хоть тезисами — из них соберу обезличенные кейсы.</li>
+      <li><b>Контакты и реквизиты</b> для подвала и страницы контактов.</li>
+      <li><b>Куда шлём заявки:</b> почта, Telegram-бот, CRM — от этого зависит бэкенд формы.</li>
+    </ul>
+  </div></div>
+</section>
+
+<footer>
+  Документ подготовлен как рабочая основа проекта студии «Верста». Названия, кейсы и оценки частотности — предварительные: цифры Wordstat подлежат проверке перед постановкой KPI, содержание кейсов заменяется фактическими данными.
+</footer>
+</div>

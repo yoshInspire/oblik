@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,700;1,7..72,400&family=Onest:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #f2f2f0; }
+    a { color: #2b3fe0; text-decoration: none; }
+    a:hover { color: #0a0c10; }
+
+    .prow { transition: background .35s ease; }
+    .prow:hover { background: rgba(43,63,224,0.06); }
+
+    /* Ставка: цифра набирается */
+    .rate { display: inline-block; }
+    .rate > span {
+      display: inline-block;
+      animation: drop .8s cubic-bezier(.16,1,.3,1) both;
+    }
+    .rate > span:nth-child(1) { animation-delay: .05s; }
+    .rate > span:nth-child(2) { animation-delay: .12s; }
+    .rate > span:nth-child(3) { animation-delay: .19s; }
+    .rate > span:nth-child(4) { animation-delay: .26s; }
+    .rate > span:nth-child(5) { animation-delay: .33s; }
+    @keyframes drop { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+
+    /* Полоса выгоды растёт */
+    .bar { transform-origin: left; transform: scaleX(0); animation: grow 1.2s cubic-bezier(.16,1,.3,1) .45s forwards; }
+    @keyframes grow { to { transform: scaleX(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .rate > span { animation: none; opacity: 1; transform: none; }
+      .bar { transform: scaleX(1); animation: none; }
+    }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 1100px; background: #f2f2f0; overflow: hidden; font-family: Onest, system-ui, sans-serif;">
+
+  <!-- Шапка раздела: ставка крупно -->
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; padding: 88px 64px 56px; align-items: end;">
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; letter-spacing: 0.18em; color: #7b8189;">ЦЕНЫ</div>
+      <div style="font-family: Literata, Georgia, serif; font-weight: 700; font-size: 60px; line-height: 0.96; letter-spacing: -0.035em; color: #0a0c10; margin-top: 22px;">
+        Дешевле студий,<br>дороже фриланса
+      </div>
+      <div style="max-width: 44ch; font-size: 16.5px; line-height: 1.6; font-weight: 300; color: #575d64; margin-top: 26px;">
+        Держим цену на 15–25 % ниже среднего по рынку. Не за счёт качества — за счёт того, что не содержим офис в центре и продажников на проценте.
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 18px;">
+      <div class="rate" style="font-family: Literata, Georgia, serif; font-weight: 700; font-size: 132px; line-height: 0.8; letter-spacing: -0.05em; color: #0a0c10;">
+        <span>2</span><span>&nbsp;</span><span>4</span><span>0</span><span>0</span>
+      </div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: 0.14em; color: #7b8189;">РУБЛЕЙ ЗА ЧАС РАБОТЫ</div>
+      <div style="width: 320px; height: 4px; background: rgba(10,12,16,0.1); margin-top: 10px;">
+        <div class="bar" style="width: 72%; height: 4px; background: #2b3fe0;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; width: 320px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #7b8189;">
+        <div>НАША СТАВКА</div>
+        <div>РЫНОК 2 500–3 500</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Таблица -->
+  <div style="border-top: 1px solid rgba(10,12,16,0.16);">
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 16px 64px; border-bottom: 1px solid rgba(10,12,16,0.16);">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #7b8189;">УСЛУГА</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #7b8189; text-align: right;">У НАС</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #7b8189; text-align: right;">ПО РЫНКУ</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Лендинг</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">65 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">80 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Корпоративный сайт</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">180 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">250 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Интернет-магазин</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">320 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">400 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Веб-сервис, личный кабинет</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">700 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">900 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">MVP для стартапа</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">450 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">600 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.09); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Поддержка, месяц</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">18 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">25 000 ₽</div>
+    </div>
+
+    <div class="prow" style="display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 40px; padding: 21px 64px; border-bottom: 1px solid rgba(10,12,16,0.16); align-items: baseline;">
+      <div style="font-size: 17px; color: #0a0c10;">Выделенный разработчик, месяц</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2b3fe0; text-align: right;">290 000 ₽</div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #a1a6ac; text-align: right; text-decoration: line-through;">380 000 ₽</div>
+    </div>
+  </div>
+
+  <!-- Условия -->
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: rgba(10,12,16,0.12); margin-top: 44px;">
+    <div style="background: #f2f2f0; padding: 26px 64px 26px 64px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #2b3fe0;">ОЦЕНКА</div>
+      <div style="font-size: 15px; line-height: 1.5; color: #575d64; margin-top: 10px;">Бесплатная, за один день по типовой задаче</div>
+    </div>
+    <div style="background: #f2f2f0; padding: 26px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #2b3fe0;">ПРЕДОПЛАТА</div>
+      <div style="font-size: 15px; line-height: 1.5; color: #575d64; margin-top: 10px;">40 % на старте, остаток по этапам</div>
+    </div>
+    <div style="background: #f2f2f0; padding: 26px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #2b3fe0;">ПРАВКИ</div>
+      <div style="font-size: 15px; line-height: 1.5; color: #575d64; margin-top: 10px;">В рамках ТЗ входят в стоимость</div>
+    </div>
+    <div style="background: #f2f2f0; padding: 26px 64px 26px 26px;">
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #2b3fe0;">КОД</div>
+      <div style="font-size: 15px; line-height: 1.5; color: #575d64; margin-top: 10px;">Репозиторий и доступы остаются у вас</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

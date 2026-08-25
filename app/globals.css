@@ -1,0 +1,400 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Тёмная тема студии. Страница лежит на живом фоне
+   (components/Backdrop.tsx), поверх него — приглушающий скрим,
+   поэтому секции остаются прозрачными, а панели — стекло.
+   ============================================================ */
+
+:root {
+  --ground: #0b0d18;
+  --paper: #0b0d18;
+
+  --surface: rgba(16, 20, 40, 0.58);
+  --surface-2: rgba(22, 27, 52, 0.68);
+  --sunk: rgba(255, 255, 255, 0.05);
+
+  --ink: #f4f6ff;
+  --ink-2: rgba(233, 237, 255, 0.82);
+  --ink-3: rgba(233, 237, 255, 0.62);
+  --rule: rgba(233, 237, 255, 0.13);
+  --rule-2: rgba(233, 237, 255, 0.22);
+
+  --accent: #4b6fe8;
+  --accent-hi: #a9bcff;
+  --accent-soft: #e7e5fe;
+  --on-accent: #ffffff;
+  --accent-wash: rgba(75, 111, 232, 0.12);
+
+  /* Токены «тёмных» секций остались, чтобы разметка страниц работала */
+  --deep: transparent;
+  --deep-2: rgba(16, 20, 40, 0.58);
+  --on-deep: #f4f6ff;
+  --on-deep-2: rgba(233, 237, 255, 0.82);
+  --deep-rule: rgba(233, 237, 255, 0.13);
+
+  --ok: #6fd0a0;
+  --stop: #ff8a8a;
+
+  --shadow-panel: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-accent-wash: var(--accent-wash);
+
+  --color-deep: var(--deep);
+  --color-deep-2: var(--deep-2);
+  --color-on-deep: var(--on-deep);
+  --color-on-deep-2: var(--on-deep-2);
+  --color-deep-rule: var(--deep-rule);
+
+  --color-ok: var(--ok);
+  --color-stop: var(--stop);
+
+  --font-display: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ============================================================
+   База
+   ============================================================ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--ground);
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 34%, transparent);
+    color: #fff;
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-hi);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.028em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  h3,
+  h4 {
+    letter-spacing: -0.014em;
+    line-height: 1.25;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Фирменные приёмы
+   ============================================================ */
+
+@layer components {
+  /* Разделитель, гаснущий к обоим концам */
+  .ruler-rule,
+  .ruler-rule-deep {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--rule-2) 48px,
+      var(--rule-2) calc(100% - 48px),
+      transparent
+    );
+  }
+
+  /* Тонкая черта под заголовком первого экрана: гаснет вправо */
+  .rule-fading {
+    background-image: linear-gradient(to right, var(--rule-2), var(--rule-2) 60%, transparent);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+  }
+
+  .text-stroke {
+    color: transparent;
+    -webkit-text-stroke: 1.6px rgba(244, 246, 255, 0.92);
+  }
+}
+
+@keyframes vPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes vUp {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes vIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes vFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   Компоненты
+   ============================================================ */
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: clamp(20px, 4vw, 44px);
+  }
+
+  /* Надзаголовок секции */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  /* — кнопки: прямоугольные, со скруглением 8px — */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 15.5px;
+    padding: 14px 26px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 200ms ease;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 84%, #fff);
+  }
+  .btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn-outline,
+  .btn-on-deep {
+    border-color: var(--rule-2);
+    color: var(--ink);
+  }
+  .btn-outline:hover,
+  .btn-on-deep:hover {
+    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+    background: rgba(75, 111, 232, 0.12);
+  }
+
+  .btn-sm {
+    padding: 9px 18px;
+    font-size: 14.5px;
+  }
+
+  /* Ссылка с подчёркиванием вместо стрелки */
+  .link-line {
+    display: inline-block;
+    font-size: 15px;
+    color: var(--accent-hi);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-hi) 45%, transparent);
+    padding-bottom: 2px;
+    transition: 200ms ease;
+  }
+  .link-line:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .link-quiet {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 14.5px;
+    color: var(--ink-3);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-2);
+    padding-bottom: 2px;
+    transition: 200ms ease;
+  }
+  .link-quiet:hover {
+    color: var(--ink);
+  }
+
+  /* — поверхности — */
+
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    backdrop-filter: blur(12px);
+    transition: 240ms ease;
+  }
+  .card-hover:hover {
+    border-color: var(--rule-2);
+    background: var(--surface-2);
+  }
+
+  .panel {
+    position: relative;
+    background: rgba(14, 18, 36, 0.72);
+    border: 1px solid var(--rule-2);
+    border-radius: 12px;
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-panel);
+  }
+
+  /* — формы — */
+
+  .field-input {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: rgba(9, 11, 22, 0.7);
+    border: 1px solid var(--rule-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: 200ms ease;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+  }
+  .field-input::placeholder {
+    color: var(--ink-3);
+  }
+  select.field-input option {
+    background: #12151c;
+    color: var(--ink);
+  }
+
+  /* Строка-услуга на внутренних страницах */
+  .row-link {
+    position: relative;
+    display: grid;
+    gap: clamp(12px, 3vw, 44px);
+    align-items: center;
+    padding: clamp(14px, 1.8vw, 20px) clamp(14px, 2vw, 22px);
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    color: var(--ink);
+    transition: 240ms ease;
+  }
+  .row-link:hover {
+    border-color: var(--rule-2);
+    background: var(--surface-2);
+  }
+}
+
+/* Плавный скролл Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
