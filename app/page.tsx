@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Code2, Rocket, Users } from "lucide-react";
-import { services, site } from "@/lib/content";
+import { Code2, LifeBuoy, Rocket } from "lucide-react";
+import { childrenOf, getPage, resolve, site } from "@/lib/content";
 import { faqLd, pageMeta } from "@/lib/seo";
 import LeadForm from "@/components/LeadForm";
 import WhyAccordion from "@/components/WhyAccordion";
@@ -8,40 +8,42 @@ import { Counter, Reveal } from "@/components/motion";
 import {
   FaqList,
   JsonLd,
+  PageCards,
   PitchCards,
-  PriceCards,
   QuotePanel,
   Section,
-  ServiceList,
   Steps,
 } from "@/components/Blocks";
 
 export const metadata = pageMeta({
-  title: `Разработка сайтов и веб-сервисов в Москве — студия «${site.brand.name}»`,
-  description:
-    "Разрабатываем сайты, интернет-магазины и веб-сервисы с нуля и дорабатываем проекты, написанные другими. Ставка 2 400 ₽/час, оценка задачи за день, код передаём заказчику.",
+  title: site.home.title,
+  description: site.home.description,
   path: "/",
 });
 
-const stats = [
-  { value: 2400, suffix: " ₽", label: "ставка за час работы" },
-  { value: 11, suffix: "", label: "направлений работы" },
-  { value: 1, suffix: " день", label: "на оценку типовой задачи" },
-];
-
-const pitchIcons = [Rocket, Code2, Users];
+const pitchIcons = [Rocket, Code2, LifeBuoy];
 
 export default function HomePage() {
-  const { home, pricing } = site;
-  const priceHighlights = pricing.table.filter((row) =>
-    ["Лендинг", "Корпоративный сайт", "Интернет-магазин", "Поддержка, месяц"].includes(row.service)
-  );
+  const { home } = site;
+  const services = childrenOf("/uslugi/");
+  const hub = getPage("/uslugi/");
+
+  // Витрина на главной — по группам из хаба услуг, чтобы список
+  // не разъезжался с реальной структурой раздела.
+  const featured = resolve([
+    "/uslugi/razrabotka-sajtov/",
+    "/uslugi/internet-magazin/",
+    "/uslugi/veb-prilozheniya/",
+    "/uslugi/dorabotka-sajta/",
+    "/uslugi/spasenie-proekta/",
+    "/uslugi/podderzhka-sajta/",
+  ]);
 
   return (
     <>
       {/* ================= ПЕРВЫЙ ЭКРАН ================= */}
       <section className="relative grid min-h-[82vh] content-center pb-[clamp(40px,6vh,80px)] pl-[clamp(24px,6vw,104px)] pr-[clamp(20px,4vw,56px)] pt-[clamp(48px,7vh,104px)]">
-        <div className="relative grid gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,240px)]">
+        <div className="relative grid gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,250px)]">
           <div>
             <h1
               className="max-w-[15ch] text-[clamp(38px,6.2vw,84px)] font-medium leading-[1.0] tracking-[-0.04em] text-ink"
@@ -65,7 +67,7 @@ export default function HomePage() {
                 <Link href="/contacts/" className="btn btn-primary">
                   {home.hero.cta}
                 </Link>
-                <Link href="/price/" className="btn btn-outline">
+                <Link href="/stoimost/" className="btn btn-outline">
                   {home.hero.ctaSecondary}
                 </Link>
               </div>
@@ -81,34 +83,49 @@ export default function HomePage() {
             }}
           />
 
+          {/* Никаких выдуманных метрик: только то, что проверяется по сайту. */}
           <div
-            className="flex flex-wrap justify-between gap-[clamp(20px,3vh,34px)] lg:flex-col lg:flex-nowrap lg:justify-center"
+            className="flex flex-col gap-[clamp(18px,2.6vh,30px)] lg:justify-center"
             style={{ animation: "vFade 1.2s .5s both" }}
           >
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <span className="block font-display text-[30px] font-medium tracking-[-0.03em] text-ink">
-                  <Counter to={stat.value} suffix={stat.suffix} />
-                </span>
-                <span className="mt-1 block text-[14.5px] leading-[1.45] text-ink-2">
-                  {stat.label}
-                </span>
-              </div>
-            ))}
+            <div>
+              <span className="block font-display text-[30px] font-medium tracking-[-0.03em] text-ink">
+                <Counter to={services.length} suffix="" />
+              </span>
+              <span className="mt-1 block text-[14.5px] leading-[1.45] text-ink-2">
+                направлений работы — от разовой правки до сервиса с нуля
+              </span>
+            </div>
+            <div className="border-t border-rule pt-[clamp(14px,2vh,22px)]">
+              <span className="block text-[15px] leading-[1.5] text-ink">
+                Разбор задачи и оценка — бесплатно
+              </span>
+              <span className="mt-1 block text-[14.5px] leading-[1.45] text-ink-2">
+                до начала работ и без обязательств
+              </span>
+            </div>
+            <div className="border-t border-rule pt-[clamp(14px,2vh,22px)]">
+              <span className="block text-[15px] leading-[1.5] text-ink">
+                Код и доступы — у заказчика
+              </span>
+              <span className="mt-1 block text-[14.5px] leading-[1.45] text-ink-2">
+                уйти к другому подрядчику можно за день
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ================= ТРИ НАПРАВЛЕНИЯ ================= */}
+      {/* ================= ТРИ ФОРМАТА ================= */}
       <Section
-        label="Что мы делаем"
+        label="Как мы работаем"
         title={
           <>
-            Три способа
-            <br />с нами работать
+            Три ситуации,
+            <br />с которыми приходят
           </>
         }
-        lead="Разные ситуации требуют разного формата. Выберите тот, что похож на вашу."
+        lead="Проект с нуля, чужой код и брошенный проект требуют разного подхода. Выберите похожую."
       >
         <PitchCards
           items={home.pitch.map((item, i) => {
@@ -117,7 +134,7 @@ export default function HomePage() {
               icon: <Icon size={20} strokeWidth={1.9} />,
               title: item.t,
               text: item.d,
-              href: "/uslugi/",
+              href: item.href,
             };
           })}
         />
@@ -133,10 +150,10 @@ export default function HomePage() {
             приходят
           </>
         }
-        lead="От разовой правки на существующем сайте до продукта, собранного с нуля."
-        link={{ href: "/uslugi/", text: "Все услуги" }}
+        lead={hub ? hub.lead[0] : undefined}
+        link={{ href: "/uslugi/", text: "Все направления" }}
       >
-        <ServiceList items={services} />
+        <PageCards items={featured} />
       </Section>
 
       {/* ================= ПОЧЕМУ МЫ ================= */}
@@ -145,7 +162,7 @@ export default function HomePage() {
           <div className="flex flex-wrap items-baseline justify-between gap-x-10 gap-y-4">
             <h2 className="text-[clamp(28px,3vw,42px)] leading-[1.05] text-ink">Чем отличаемся</h2>
             <p className="max-w-[40ch] text-pretty text-[15.5px] leading-[1.6] text-ink-2">
-              Четыре причины, каждая проверяется до подписания договора.
+              Четыре вещи, которые можно проверить до подписания договора.
             </p>
             <span className="label text-ink-3">Почему мы</span>
           </div>
@@ -171,7 +188,7 @@ export default function HomePage() {
             <div>
               <span className="label block text-ink-3">Как устроена работа</span>
               <h2 className="mt-3.5 text-[clamp(28px,3vw,42px)] leading-[1.06] text-ink">
-                Прозрачный процесс от первого шага
+                Сначала разобраться, потом оценить
               </h2>
             </div>
             <p className="text-pretty text-[15.5px] leading-[1.6] text-ink-2">
@@ -181,25 +198,9 @@ export default function HomePage() {
         </Reveal>
 
         <div className="mt-[clamp(32px,4vw,56px)]">
-          <Steps steps={site.about.process.map(({ t, d, dur }) => ({ t, d, dur }))} />
+          <Steps steps={site.about.process.map(({ t, d }) => ({ t, d }))} />
         </div>
       </section>
-
-      {/* ================= ЦЕНЫ ================= */}
-      <Section
-        label="Цены"
-        title={
-          <>
-            Сколько
-            <br />
-            это стоит
-          </>
-        }
-        lead={pricing.policy}
-        link={{ href: "/price/", text: "Полный прайс и условия" }}
-      >
-        <PriceCards rows={priceHighlights} />
-      </Section>
 
       {/* ================= ВОПРОСЫ И ЗАЯВКА ================= */}
       <section
@@ -216,13 +217,13 @@ export default function HomePage() {
             <FaqList faq={home.faq} />
           </div>
 
-          <ul className="mt-7 flex flex-col gap-2.5 border-t border-rule pt-5">
-            {pricing.conditions.slice(0, 3).map((condition) => (
-              <li key={condition} className="max-w-[62ch] text-[14.5px] leading-[1.6] text-ink-3">
-                {condition}
-              </li>
-            ))}
-          </ul>
+          <p className="mt-7 max-w-[56ch] border-t border-rule pt-5 text-[14.5px] leading-[1.6] text-ink-3">
+            Больше разборов — в разделе{" "}
+            <Link href="/voprosy/" className="link-quiet">
+              вопросов о разработке
+            </Link>
+            : как выбрать подрядчика, кому принадлежит код, что делать, если исполнитель пропал.
+          </p>
         </div>
 
         <LeadForm title={home.finalCta.t} lead={home.finalCta.d} />

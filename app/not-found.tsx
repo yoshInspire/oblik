@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { services } from "@/lib/content";
-import { serviceIcon } from "@/lib/icons";
+import { childrenOf, teaser } from "@/lib/content";
+import { pageIcon } from "@/lib/icons";
 
 export const metadata = {
   title: "Страница не найдена",
@@ -34,12 +34,12 @@ export default function NotFound() {
       </div>
 
       <div className="mt-16 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-        {services.slice(0, 6).map((service) => {
-          const Icon = serviceIcon(service.slug);
+        {childrenOf("/uslugi/").slice(0, 6).map((service) => {
+          const Icon = pageIcon(service.id);
           return (
             <Link
-              key={service.slug}
-              href={`/uslugi/${service.slug}/`}
+              key={service.url}
+              href={service.url}
               className="card group flex items-center gap-4 p-6 hover:border-accent/50 hover:bg-surface-2"
             >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-wash text-accent-hi">
@@ -47,7 +47,7 @@ export default function NotFound() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-ink">{service.nav}</span>
-                <span className="font-mono text-[12px] text-ink-3">{service.priceFrom}</span>
+                <span className="block truncate text-[12.5px] text-ink-3">{teaser(service)}</span>
               </span>
               <ArrowUpRight
                 size={16}

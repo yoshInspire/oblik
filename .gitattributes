@@ -1,0 +1,9 @@
+# В репозитории всегда LF: проект собирается на Linux-сервере,
+# CRLF в скриптах ломает шебанг и sh-запуск.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

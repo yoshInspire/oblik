@@ -65,12 +65,7 @@ export function organizationLd() {
   };
 }
 
-export function serviceLd(input: {
-  name: string;
-  description: string;
-  path: string;
-  priceFrom: string;
-}) {
+export function serviceLd(input: { name: string; description: string; path: string }) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -83,12 +78,9 @@ export function serviceLd(input: {
       name: `Студия «${site.brand.name}»`,
       url: BASE_URL,
     },
-    areaServed: { "@type": "City", name: site.brand.city },
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "RUB",
-      description: input.priceFrom,
-    },
+    areaServed: { "@type": "Country", name: "Россия" },
+    // Offer с ценой намеренно не размечаем: цены не публикуются,
+    // а разметка с выдуманной суммой — прямой путь к санкциям.
   };
 }
 

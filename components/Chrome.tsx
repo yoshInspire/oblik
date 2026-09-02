@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { services, site } from "@/lib/content";
+import { childrenOf, site } from "@/lib/content";
 
 /* Знак: словесный логотип и пульсирующая точка */
 function Mark({ size = 20 }: { size?: number }) {
@@ -29,7 +29,8 @@ function Mark({ size = 20 }: { size?: number }) {
 
 const links = [
   { href: "/uslugi/", label: "Услуги" },
-  { href: "/price/", label: "Цены" },
+  { href: "/tehnologii/", label: "Технологии" },
+  { href: "/stoimost/", label: "Стоимость" },
   { href: "/about/", label: "О студии" },
   { href: "/contacts/", label: "Контакты" },
 ];
@@ -148,7 +149,17 @@ export function Header() {
   );
 }
 
+const sections = [
+  { href: "/uslugi/", label: "Все услуги" },
+  { href: "/tehnologii/", label: "Технологии" },
+  { href: "/otraslyam/", label: "Отраслям" },
+  { href: "/goroda/", label: "География" },
+  { href: "/voprosy/", label: "Вопросы" },
+  { href: "/stoimost/", label: "Стоимость" },
+];
+
 export function Footer() {
+  const services = childrenOf("/uslugi/");
   const half = Math.ceil(services.length / 2);
   const { contacts } = site.brand;
 
@@ -169,7 +180,7 @@ export function Footer() {
       </div>
 
       <div className="shell relative py-[clamp(32px,3.5vw,48px)]">
-        <div className="grid gap-x-[clamp(24px,4vw,52px)] gap-y-8 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+        <div className="grid gap-x-[clamp(24px,4vw,52px)] gap-y-8 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.05fr]">
           <div>
             <Mark />
             <p className="mt-4 max-w-[34ch] text-[14.5px] leading-[1.6] text-ink-2">
@@ -185,11 +196,8 @@ export function Footer() {
             <h4 className="label text-ink-3">Услуги</h4>
             <ul className="mt-4 flex flex-col gap-2.5 text-[14.5px]">
               {services.slice(0, half).map((service) => (
-                <li key={service.slug}>
-                  <Link
-                    href={`/uslugi/${service.slug}/`}
-                    className="text-ink-2 transition-colors hover:text-ink"
-                  >
+                <li key={service.url}>
+                  <Link href={service.url} className="text-ink-2 transition-colors hover:text-ink">
                     {service.nav}
                   </Link>
                 </li>
@@ -201,12 +209,22 @@ export function Footer() {
             <h4 className="label text-ink-3">Ещё</h4>
             <ul className="mt-4 flex flex-col gap-2.5 text-[14.5px]">
               {services.slice(half).map((service) => (
-                <li key={service.slug}>
-                  <Link
-                    href={`/uslugi/${service.slug}/`}
-                    className="text-ink-2 transition-colors hover:text-ink"
-                  >
+                <li key={service.url}>
+                  <Link href={service.url} className="text-ink-2 transition-colors hover:text-ink">
                     {service.nav}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="label text-ink-3">Разделы</h4>
+            <ul className="mt-4 flex flex-col gap-2.5 text-[14.5px]">
+              {sections.map((section) => (
+                <li key={section.href}>
+                  <Link href={section.href} className="text-ink-2 transition-colors hover:text-ink">
+                    {section.label}
                   </Link>
                 </li>
               ))}
@@ -241,7 +259,7 @@ export function Footer() {
 
         <div className="mt-9 flex flex-col gap-2 border-t border-rule pt-5 text-[13.5px] text-ink-3 md:flex-row md:justify-between">
           <span>© 2026 Студия «{site.brand.name}»</span>
-          <span>Ставка 2 400 ₽/час · оценка задачи за один день</span>
+          <span>Разбор задачи и оценка — бесплатно · код и доступы у заказчика</span>
         </div>
       </div>
     </footer>

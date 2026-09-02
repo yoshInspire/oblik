@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "doc": "node scripts/build-doc.mjs"
+    "seo": "node scripts/seo/build-core.mjs",
+    "seo:check": "node scripts/seo/check-content.mjs",
+    "test:form": "node scripts/test-form.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

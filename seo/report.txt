@@ -1,0 +1,66 @@
+СЕМАНТИЧЕСКОЕ ЯДРО
+
+маркеров:            87
+фраз после чистки:   2708
+отсеяно по стоп-словам: 4
+страниц (кластеров): 94
+
+ПО РАЗДЕЛАМ
+  /uslugi/               45 стр.   1512 фраз
+  /goroda/                8 стр.    445 фраз
+  /otraslyam/            13 стр.    327 фраз
+  /tehnologii/           12 стр.    312 фраз
+  /stoimost/              1 стр.     49 фраз
+  /voprosy/              12 стр.     47 фраз
+  /root/                  1 стр.      9 фраз
+  /contacts/              1 стр.      4 фраз
+  /about/                 1 стр.      3 фраз
+
+ПО ИНТЕНТАМ
+  commercial       2557
+  mixed              70
+  informational      44
+
+ПО ЧАСТОТНОСТИ (оценка)
+  ВЧ                236
+  СЧ                946
+  НЧ               1526
+
+РИСК КАННИБАЛИЗАЦИИ: 0 фраз претендовали на два URL
+
+ТОНКИЕ КЛАСТЕРЫ (<8 фраз): 18
+  /about/  (3)
+  /contacts/  (4)
+  /goroda/  (4)
+  /otraslyam/  (4)
+  /tehnologii/  (5)
+  /uslugi/  (5)
+  /voprosy/  (3)
+  /voprosy/kak-integrirovat-1c/  (4)
+  /voprosy/kak-proverit-kachestvo-koda/  (4)
+  /voprosy/kak-uskorit-sajt/  (4)
+  /voprosy/kak-vybrat-podryadchika/  (4)
+  /voprosy/konstruktor-ili-razrabotka/  (4)
+  /voprosy/lending-ili-sajt/  (4)
+  /voprosy/peredacha-ishodnogo-koda/  (4)
+  /voprosy/razrabotchik-propal/  (4)
+  /voprosy/sroki-razrabotki/  (4)
+  /voprosy/studiya-ili-frilanser/  (4)
+  /voprosy/tehnicheskoe-zadanie/  (4)
+
+ТОП-15 КЛАСТЕРОВ ПО ОБЪЁМУ
+    63  /goroda/ekaterinburg/
+    63  /goroda/kazan/
+    63  /goroda/krasnodar/
+    63  /goroda/nizhnij-novgorod/
+    63  /goroda/novosibirsk/
+    63  /goroda/omsk/
+    63  /goroda/sankt-peterburg/
+    60  /uslugi/razrabotka-sajtov/
+    52  /uslugi/dorabotka-sajta/
+    49  /stoimost/
+    48  /uslugi/podderzhka-sajta/
+    48  /uslugi/razrabotka-sajtov/lending/
+    48  /uslugi/uskorenie-sajta/
+    44  /uslugi/integracii/1c/
+    44  /uslugi/internet-magazin/
