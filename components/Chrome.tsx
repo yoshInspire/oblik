@@ -6,24 +6,23 @@ import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { childrenOf, site } from "@/lib/content";
 
-/* Знак: словесный логотип и пульсирующая точка */
-function Mark({ size = 20 }: { size?: number }) {
+/* Знак. Собран из кадра покоя исходного ролика: прозрачность взята из
+   «темноты» кадра (белый фон уходит в ноль, буквы остаются), тени подняты,
+   чтобы надпись читалась на тёмном.
+   Анимацию оттуда вытащить не вышло: на кадрах с бликом дым лежит в том же
+   тоне, что и фон, и после ключевания проступает грязью поверх букв.
+   Для движущегося знака нужен исходник на прозрачном или тёмном фоне. */
+function Mark({ height = 28 }: { height?: number }) {
   return (
-    <span
-      className="inline-flex items-baseline gap-[9px] font-display font-semibold"
-      style={{ fontSize: size, letterSpacing: "-0.02em", color: "var(--ink)" }}
-    >
-      {site.brand.name}
-      <span
-        aria-hidden="true"
-        className="h-[5px] w-[5px] rounded-full"
-        style={{
-          background: "var(--accent)",
-          boxShadow: "0 0 14px var(--accent)",
-          animation: "vPulse 2.4s ease-in-out infinite",
-        }}
-      />
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/oblik-logo.webp"
+      alt="Облик"
+      width={480}
+      height={168}
+      draggable={false}
+      style={{ height, width: "auto", display: "block" }}
+    />
   );
 }
 
