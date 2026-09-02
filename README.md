@@ -12,30 +12,40 @@ npm run build
 
 ## Развёртывание на сервере
 
-Требуется Node.js 20.9 или новее. Первый раз:
+Боевой стенд: `oblik.space`, сервер `62.84.121.162`, Ubuntu 24.04, Node.js 22 LTS.
+Код лежит в `/srv/oblik`, процесс держит systemd (`oblik.service`), снаружи стоит
+nginx с сертификатом Let's Encrypt и проксирует на `127.0.0.1:3000`.
+
+Обновление — один скрипт. `git pull` сам по себе ничего не меняет: приложение
+собирается заранее, поэтому нужны пересборка и перезапуск.
 
 ```bash
-git clone https://github.com/oblikfeo/oblik.git
-cd oblik
+ssh ubuntu@62.84.121.162
+/srv/oblik/scripts/deploy.sh
+```
+
+Скрипт делает `git pull --ff-only`, `npm ci`, `npm run build`, перезапускает
+сервис и проверяет, что тот отвечает.
+
+Полезное:
+
+```bash
+sudo systemctl status oblik      # состояние процесса
+journalctl -u oblik -f           # логи приложения
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot renew --dry-run     # проверка автопродления сертификата
+```
+
+Развернуть с нуля на другом сервере:
+
+```bash
+git clone git@github.com:yoshInspire/oblik.git /srv/oblik
+cd /srv/oblik
 cp .env.example .env        # заполнить домен и токены
 npm ci
 npm run build
 npm start                   # слушает 3000, за ним нужен nginx
 ```
-
-Обновление. `git pull` сам по себе ничего не меняет — приложение
-собирается заранее, поэтому после каждого обновления нужна пересборка
-и перезапуск процесса:
-
-```bash
-git pull
-npm ci                      # только если менялся package-lock.json
-npm run build
-# перезапустить процесс: pm2 restart versta / systemctl restart versta
-```
-
-Процесс держать под pm2 или systemd — `npm start` в отдельной сессии
-умрёт вместе с ней. Nginx проксирует на `127.0.0.1:3000` и раздаёт HTTPS.
 
 Каталог `data/` создаётся при первой заявке и в репозиторий не входит.
 Он должен быть доступен процессу на запись и попадать в резервные копии —

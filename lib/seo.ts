@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { site } from "./content";
 
 export const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://versta.studio";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://oblik.space";
 
 export function absolute(path = "/"): string {
   return BASE_URL + path;
