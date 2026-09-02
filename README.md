@@ -16,16 +16,23 @@ npm run build
 Код лежит в `/srv/oblik`, процесс держит systemd (`oblik.service`), снаружи стоит
 nginx с сертификатом Let's Encrypt и проксирует на `127.0.0.1:3000`.
 
-Обновление — один скрипт. `git pull` сам по себе ничего не меняет: приложение
-собирается заранее, поэтому нужны пересборка и перезапуск.
+Сервер не тянет код с GitHub сам: на git-fetch с его адреса GitHub отвечает 401
+даже для публичных репозиториев. Поэтому дерево уезжает с рабочей машины, а
+сборка идёт на сервере. Порядок такой — сначала коммит и push, потом деплой,
+иначе на сервере окажется не то, что лежит в гите:
 
 ```bash
-ssh ubuntu@62.84.121.162
-/srv/oblik/scripts/deploy.sh
+git push
+scripts/deploy-from-local.sh /путь/к/ssh-ключу
 ```
 
-Скрипт делает `git pull --ff-only`, `npm ci`, `npm run build`, перезапускает
-сервис и проверяет, что тот отвечает.
+Скрипт переносит дерево, запускает на сервере `npm ci`, `npm run build`,
+перезапускает сервис и проверяет отклик — снаружи и изнутри.
+
+Чтобы перейти на `git pull` на сервере, нужно добавить deploy-ключ сервера
+в настройки репозитория (Settings → Deploy keys, доступ только на чтение).
+Ключ лежит на сервере в `~ubuntu/.ssh/oblik_deploy.pub`, SSH к GitHub с сервера
+работает через `ssh.github.com:443` — это уже прописано в `~ubuntu/.ssh/config`.
 
 Полезное:
 
@@ -33,18 +40,7 @@ ssh ubuntu@62.84.121.162
 sudo systemctl status oblik      # состояние процесса
 journalctl -u oblik -f           # логи приложения
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot renew --dry-run     # проверка автопродления сертификата
-```
-
-Развернуть с нуля на другом сервере:
-
-```bash
-git clone git@github.com:yoshInspire/oblik.git /srv/oblik
-cd /srv/oblik
-cp .env.example .env        # заполнить домен и токены
-npm ci
-npm run build
-npm start                   # слушает 3000, за ним нужен nginx
+sudo certbot certificates        # сроки сертификата
 ```
 
 Каталог `data/` создаётся при первой заявке и в репозиторий не входит.
