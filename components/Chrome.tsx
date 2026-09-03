@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { childrenOf, site } from "@/lib/content";
+import { TelegramIcon } from "./TelegramIcon";
 
 /* Знак. Собран из кадра покоя исходного ролика: прозрачность взята из
    «темноты» кадра (белый фон уходит в ноль, буквы остаются), тени подняты,
@@ -164,11 +165,10 @@ export function Footer() {
 
   const channels = [
     { text: contacts.email, href: `mailto:${contacts.email}` },
-    { text: contacts.phone, href: `tel:${contacts.phone.replace(/[^+\d]/g, "")}` },
-    {
-      text: `Telegram ${contacts.telegram}`,
-      href: `https://t.me/${contacts.telegram.replace("@", "")}`,
-    },
+    ...contacts.phones.map((phone) => ({
+      text: phone,
+      href: `tel:${phone.replace(/[^+\d]/g, "")}`,
+    })),
     { text: site.brand.city, href: null },
   ];
 
@@ -186,8 +186,7 @@ export function Footer() {
               {site.brand.positioning}
             </p>
             <p className="mt-[18px] text-[13.5px] leading-[1.6] text-ink-3">
-              Студия «{site.brand.name}» · ИНН {site.brand.requisites.inn} · ОГРНИП{" "}
-              {site.brand.requisites.ogrn}
+              Студия «{site.brand.name}» · {site.brand.requisites.address}
             </p>
           </div>
 
@@ -250,6 +249,23 @@ export function Footer() {
                   ) : (
                     <span className="text-ink-2">{channel.text}</span>
                   )}
+                </li>
+              ))}
+            </ul>
+
+            <ul className="mt-4 flex items-center gap-2.5">
+              {contacts.telegram.map((nick) => (
+                <li key={nick}>
+                  <a
+                    href={`https://t.me/${nick.replace("@", "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Telegram ${nick}`}
+                    title={`Telegram ${nick}`}
+                    className="grid h-9 w-9 place-items-center rounded-lg border border-rule-2 text-ink-3 transition-colors hover:border-accent hover:text-accent-hi"
+                  >
+                    <TelegramIcon size={17} />
+                  </a>
                 </li>
               ))}
             </ul>

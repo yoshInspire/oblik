@@ -47,7 +47,10 @@ export function organizationLd() {
     description: site.brand.positioning,
     url: BASE_URL,
     email: site.brand.contacts.email,
-    telephone: site.brand.contacts.phone,
+    telephone: site.brand.contacts.phones,
+    sameAs: site.brand.contacts.telegram.map(
+      (nick) => `https://t.me/${nick.replace("@", "")}`,
+    ),
     priceRange: "₽₽",
     areaServed: { "@type": "Country", name: "Россия" },
     address: {

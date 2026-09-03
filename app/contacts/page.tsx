@@ -1,9 +1,10 @@
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { site } from "@/lib/content";
 import { breadcrumbLd, organizationLd, pageMeta } from "@/lib/seo";
 import LeadForm from "@/components/LeadForm";
 import { Reveal } from "@/components/motion";
 import { Breadcrumbs, JsonLd } from "@/components/Blocks";
+import { TelegramIcon } from "@/components/TelegramIcon";
 
 export const metadata = pageMeta({
   title: site.contacts.title,
@@ -21,19 +22,24 @@ export default function ContactsPage() {
   const { contacts: channels, requisites } = site.brand;
 
   const direct = [
-    { icon: Mail, label: "Почта", value: channels.email, href: `mailto:${channels.email}` },
     {
-      icon: MessageCircle,
-      label: "Telegram",
-      value: channels.telegram,
-      href: `https://t.me/${channels.telegram.replace("@", "")}`,
+      icon: Mail,
+      label: "Почта",
+      value: channels.email,
+      href: `mailto:${channels.email}`,
     },
-    {
+    ...channels.phones.map((phone, i) => ({
       icon: Phone,
-      label: "Телефон",
-      value: channels.phone,
-      href: `tel:${channels.phone.replace(/[^+\d]/g, "")}`,
-    },
+      label: i === 0 ? "Телефон" : "",
+      value: phone,
+      href: `tel:${phone.replace(/[^+\d]/g, "")}`,
+    })),
+    ...channels.telegram.map((nick, i) => ({
+      icon: TelegramIcon,
+      label: i === 0 ? "Telegram" : "",
+      value: nick,
+      href: `https://t.me/${nick.replace("@", "")}`,
+    })),
   ];
 
   return (
@@ -79,7 +85,7 @@ export default function ContactsPage() {
             <span className="label mt-10 block text-ink-3">Напрямую</span>
             <ul className="mt-5 flex flex-col gap-2.5">
               {direct.map(({ icon: Icon, label, value, href }) => (
-                <li key={label}>
+                <li key={value}>
                   <a href={href} className="row-link grid-cols-[20px_minmax(90px,auto)_1fr] gap-4">
                     <Icon size={18} strokeWidth={1.9} className="shrink-0 text-ink-3" />
                     <span className="label text-ink-3">{label}</span>
@@ -90,8 +96,7 @@ export default function ContactsPage() {
             </ul>
 
             <p className="mt-8 border-t border-rule pt-5 text-[13.5px] leading-[1.6] text-ink-3">
-              Студия «{site.brand.name}» · ИНН {requisites.inn} · ОГРНИП {requisites.ogrn} ·{" "}
-              {requisites.address}
+              Студия «{site.brand.name}» · {requisites.address}
             </p>
           </Reveal>
         </div>

@@ -1,8 +1,8 @@
 {
-  "name": "versta-studio",
+  "name": "oblik-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "Сайт веб-студии «Верста» — Next.js App Router",
+  "description": "Сайт веб-студии «Облик» — Next.js App Router",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

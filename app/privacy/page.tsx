@@ -15,7 +15,7 @@ export const metadata = {
 const sections = [
   {
     t: "1. Кто обрабатывает данные",
-    d: `Оператором персональных данных является студия «${site.brand.name}», ИНН ${site.brand.requisites.inn}, адрес: ${site.brand.requisites.address}. Связаться по вопросам обработки данных можно по адресу ${site.brand.contacts.email}.`,
+    d: `Оператором персональных данных является студия «${site.brand.name}», адрес: ${site.brand.requisites.address}. Связаться по вопросам обработки данных можно по адресу ${site.brand.contacts.email}.`,
   },
   {
     t: "2. Какие данные мы собираем",
