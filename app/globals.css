@@ -84,6 +84,11 @@
     background: var(--ground);
     scroll-behavior: smooth;
     color-scheme: dark;
+    /* Липкая шапка не должна накрывать якорь, на который перешли */
+    scroll-padding-top: 88px;
+    /* clip, а не hidden: не превращает элемент в скролл-контейнер
+       и не ломает position: sticky у шапки */
+    overflow-x: clip;
   }
 
   body {
@@ -94,7 +99,30 @@
     line-height: 1.6;
     font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Тач: убираем задержку 300 мс и подсветку по тапу */
+  a,
+  button,
+  summary,
+  label,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+  }
+
+  /* Длинные адреса и ссылки на узком экране рвём, а не растягиваем макет */
+  a,
+  p,
+  li,
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
   }
 
   ::selection {
@@ -161,7 +189,9 @@
 
   .text-stroke {
     color: transparent;
-    -webkit-text-stroke: 1.6px rgba(244, 246, 255, 0.92);
+    /* Толщина обводки должна идти за кеглем, иначе на телефоне
+       буквы заплывают */
+    -webkit-text-stroke: clamp(1px, 0.026em, 1.6px) rgba(244, 246, 255, 0.92);
   }
 }
 
@@ -208,6 +238,20 @@
     padding-inline: clamp(20px, 4vw, 44px);
   }
 
+  /* Шапка. Размытие липкой полосы на телефоне пересчитывается каждый
+     кадр прокрутки, поэтому там — плотная заливка без blur. */
+  .site-header {
+    background: linear-gradient(180deg, rgba(11, 13, 24, 0.86), rgba(11, 13, 24, 0.34));
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  @media (max-width: 767px) {
+    .site-header {
+      background: rgba(11, 13, 24, 0.92);
+      backdrop-filter: none;
+    }
+  }
+
   /* Надзаголовок секции */
   .label {
     font-family: var(--font-mono);
@@ -224,10 +268,11 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    min-height: 46px;
     font-family: inherit;
     font-weight: 500;
     font-size: 15.5px;
-    padding: 14px 26px;
+    padding: 13px 26px;
     border-radius: 8px;
     border: 1px solid transparent;
     text-decoration: none;
@@ -236,12 +281,20 @@
     transition: 200ms ease;
   }
 
+  /* Узкий экран: подпись важнее «кнопочности» — даём переносить строку,
+     чтобы длинная надпись не выталкивала кнопку за край окна */
+  @media (max-width: 639px) {
+    .btn {
+      max-width: 100%;
+      padding-inline: 20px;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+
   .btn-primary {
     background: var(--accent);
     color: var(--on-accent);
-  }
-  .btn-primary:hover {
-    background: color-mix(in srgb, var(--accent) 84%, #fff);
   }
   .btn-primary:disabled {
     opacity: 0.55;
@@ -253,13 +306,9 @@
     border-color: var(--rule-2);
     color: var(--ink);
   }
-  .btn-outline:hover,
-  .btn-on-deep:hover {
-    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
-    background: rgba(75, 111, 232, 0.12);
-  }
 
   .btn-sm {
+    min-height: 38px;
     padding: 9px 18px;
     font-size: 14.5px;
   }
@@ -274,10 +323,6 @@
     padding-bottom: 2px;
     transition: 200ms ease;
   }
-  .link-line:hover {
-    color: var(--ink);
-    border-color: var(--ink);
-  }
 
   .link-quiet {
     display: inline-block;
@@ -289,8 +334,15 @@
     padding-bottom: 2px;
     transition: 200ms ease;
   }
-  .link-quiet:hover {
-    color: var(--ink);
+
+  /* Пальцем в ссылку высотой 26 px не попасть — на тач-экранах
+     поднимаем область нажатия, не трогая рисунок подчёркивания */
+  @media (pointer: coarse) {
+    .link-line,
+    .link-quiet {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
   }
 
   /* — поверхности — */
@@ -302,10 +354,6 @@
     border-radius: 10px;
     backdrop-filter: blur(12px);
     transition: 240ms ease;
-  }
-  .card-hover:hover {
-    border-color: var(--rule-2);
-    background: var(--surface-2);
   }
 
   .panel {
@@ -321,6 +369,7 @@
 
   .field-input {
     width: 100%;
+    min-height: 48px;
     box-sizing: border-box;
     font-family: inherit;
     font-size: 15.5px;
@@ -338,6 +387,26 @@
   }
   .field-input::placeholder {
     color: var(--ink-3);
+  }
+
+  /* Ниже 16 px Safari на iOS зумит страницу при фокусе в поле
+     и обратно уже не отъезжает */
+  @media (max-width: 767px) {
+    .field-input {
+      font-size: 16px;
+    }
+  }
+
+  /* Свой маркер списка: с appearance: none системная стрелка пропадает,
+     и поле неотличимо от обычного ввода */
+  select.field-input {
+    appearance: none;
+    padding-right: 40px;
+    background-color: rgba(9, 11, 22, 0.7);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e9edff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='.62'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
   }
   select.field-input option {
     background: #12151c;
@@ -358,9 +427,66 @@
     color: var(--ink);
     transition: 240ms ease;
   }
-  .row-link:hover {
-    border-color: var(--rule-2);
-    background: var(--surface-2);
+
+  /* ----------------------------------------------------------------
+     Наведение — только там, где есть курсор. На тач-экране :hover
+     «залипает» после тапа и карточка остаётся подсвеченной.
+     ---------------------------------------------------------------- */
+
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+      background: color-mix(in srgb, var(--accent) 84%, #fff);
+    }
+    .btn-outline:hover,
+    .btn-on-deep:hover {
+      border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+      background: rgba(75, 111, 232, 0.12);
+    }
+    .link-line:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+    .link-quiet:hover {
+      color: var(--ink);
+    }
+    .card-hover:hover {
+      border-color: var(--rule-2);
+      background: var(--surface-2);
+    }
+    .row-link:hover {
+      border-color: var(--rule-2);
+      background: var(--surface-2);
+    }
+  }
+
+  /* Десятки backdrop-filter одновременно — самый дорогой эффект страницы.
+     На телефоне снимаем размытие и компенсируем плотностью подложки. */
+  @media (max-width: 767px) {
+    .card,
+    .row-link,
+    .panel {
+      backdrop-filter: none;
+    }
+    .card,
+    .row-link {
+      background: rgba(16, 20, 40, 0.82);
+    }
+    .panel {
+      background: rgba(13, 16, 33, 0.9);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+    }
+  }
+
+  /* Отклик на тап вместо наведения */
+  @media (hover: none) {
+    .card-hover:active,
+    .row-link:active {
+      border-color: var(--rule-2);
+      background: var(--surface-2);
+    }
+    .btn:active {
+      transform: scale(0.985);
+    }
   }
 }
 

@@ -172,14 +172,27 @@ export function PageRows({ items }: { items: Page[] }) {
         const Icon = pageIcon(page.id);
         return (
           <Reveal key={page.url} index={Math.min(i, 6)}>
+            {/* На узком экране строка складывается в два ряда:
+                значок с названием сверху, подводка под ними */}
             <Link
               href={page.url}
-              className="row-link grid-cols-1 gap-2 md:grid-cols-[20px_minmax(180px,1fr)_minmax(240px,1.8fr)_auto] md:gap-[clamp(12px,3vw,44px)]"
+              className="row-link grid-cols-[20px_minmax(0,1fr)] gap-x-3 gap-y-1.5 md:grid-cols-[20px_minmax(180px,1fr)_minmax(240px,1.8fr)_auto] md:gap-[clamp(12px,3vw,44px)]"
             >
-              <Icon size={18} strokeWidth={1.9} className="shrink-0 text-ink-3" />
-              <span className="font-display text-[16.5px] font-medium text-ink">{page.nav}</span>
-              <span className="text-[14.5px] leading-[1.55] text-ink-2">{teaser(page)}</span>
-              <ArrowUpRight size={16} className="shrink-0 text-ink-3" />
+              <Icon
+                size={18}
+                strokeWidth={1.9}
+                className="col-start-1 row-start-1 shrink-0 text-ink-3"
+              />
+              <span className="col-start-2 row-start-1 font-display text-[16.5px] font-medium text-ink">
+                {page.nav}
+              </span>
+              <span className="col-start-2 row-start-2 text-[14.5px] leading-[1.55] text-ink-2 md:col-start-3 md:row-start-1">
+                {teaser(page)}
+              </span>
+              <ArrowUpRight
+                size={16}
+                className="hidden shrink-0 text-ink-3 md:col-start-4 md:row-start-1 md:block"
+              />
             </Link>
           </Reveal>
         );
@@ -201,14 +214,17 @@ export function QuotePanel({
   return (
     <Reveal>
       <div
-        className="card flex flex-wrap items-center gap-8 p-[clamp(26px,3vw,38px)]"
+        className="card flex flex-wrap items-center gap-6 p-[clamp(22px,3vw,38px)] sm:gap-8"
         style={{ borderLeft: "2px solid var(--accent)" }}
       >
-        <blockquote className="flex-1 font-display text-[clamp(19px,1.8vw,25px)] font-medium leading-[1.4] tracking-[-0.02em] text-ink">
+        <blockquote className="flex-1 basis-full font-display text-[clamp(19px,1.8vw,25px)] font-medium leading-[1.4] tracking-[-0.02em] text-ink sm:basis-auto">
           {children}
         </blockquote>
         {href && (
-          <Link href={href} className="btn btn-outline shrink-0 px-[22px] py-3 text-[15px]">
+          <Link
+            href={href}
+            className="btn btn-outline w-full px-[22px] text-[15px] sm:w-auto sm:shrink-0"
+          >
             {action}
           </Link>
         )}
@@ -231,7 +247,7 @@ export function Steps({ steps }: { steps: { t: string; d: string; dur?: string }
             as="li"
             key={step.t}
             index={Math.min(i, 5)}
-            className="w-full min-w-[220px] pr-[clamp(14px,1.6vw,26px)] sm:w-1/2 lg:w-1/4"
+            className="w-full min-w-0 sm:w-1/2 sm:min-w-[220px] sm:pr-[clamp(14px,1.6vw,26px)] lg:w-1/4"
           >
             <span className="block min-h-5 font-mono text-[12.5px] tracking-[0.06em] text-accent-hi">
               {step.dur || String(i + 1).padStart(2, "0")}
@@ -260,13 +276,13 @@ export function FaqList({ faq }: { faq: Faq[] }) {
     <div className="flex flex-col">
       {faq.map((item) => (
         <details key={item.q} className="group border-t border-rule">
-          <summary className="flex cursor-pointer list-none items-center gap-5 py-[15px] text-[16px] text-ink transition-colors hover:text-accent-hi">
+          <summary className="flex min-h-[52px] cursor-pointer list-none items-center gap-4 py-[15px] text-[16px] text-ink transition-colors hover:text-accent-hi sm:gap-5">
             <span className="flex-1">{item.q}</span>
             <span className="h-5 w-5 shrink-0 text-ink-3 transition-transform duration-300 group-open:rotate-45">
               <Plus size={18} strokeWidth={2} />
             </span>
           </summary>
-          <p className="max-w-[68ch] pb-[18px] pr-10 text-[15px] leading-[1.65] text-ink-2">
+          <p className="max-w-[68ch] pb-[18px] text-[15px] leading-[1.65] text-ink-2 sm:pr-10">
             {item.a}
           </p>
         </details>

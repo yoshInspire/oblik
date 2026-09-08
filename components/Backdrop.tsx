@@ -89,6 +89,16 @@ export default function Backdrop() {
       return;
     }
 
+    /* Телефон считает тот же кадр на порядок медленнее: шейдер с семью
+       октавами шума и разряды с тенью в 54 px съедают батарею и роняют
+       прокрутку. На тач-экранах режем плотность пикселей, самый широкий
+       ореол молнии и частоту разрядов. */
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
+    const mobile = coarse || narrow;
+    const maxDpr = mobile ? 1 : 1.5;
+    const boltEvery = mobile ? BOLT_EVERY * 1.8 : BOLT_EVERY;
+
     let dpr = 1;
     let rafField = 0;
     let rafBolt = 0;
@@ -108,7 +118,7 @@ export default function Backdrop() {
     let speed = 0;
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       for (const canvas of [field, bolt]) {
         canvas.width = Math.max(2, Math.floor(canvas.clientWidth * dpr));
         canvas.height = Math.max(2, Math.floor(canvas.clientHeight * dpr));
@@ -240,7 +250,7 @@ export default function Backdrop() {
       if (!nextAt) nextAt = now + 600;
       if (now >= nextAt) {
         bolts.push(makeBolt(bolt.width, bolt.height));
-        nextAt = now + BOLT_EVERY * 1000 * (0.75 + Math.random() * 0.5);
+        nextAt = now + boltEvery * 1000 * (0.75 + Math.random() * 0.5);
       }
 
       ctx.clearRect(0, 0, bolt.width, bolt.height);
@@ -262,11 +272,16 @@ export default function Backdrop() {
         ctx.shadowColor = b.col;
 
         // четыре прохода: ореол, свечение, тело, белая жила
-        const passes: [number, number, number][] = [
-          [54, 9, 0.14],
-          [28, 4, 0.3],
-          [12, 1.8, 0.65],
-        ];
+        const passes: [number, number, number][] = mobile
+          ? [
+              [24, 5, 0.26],
+              [10, 1.8, 0.62],
+            ]
+          : [
+              [54, 9, 0.14],
+              [28, 4, 0.3],
+              [12, 1.8, 0.65],
+            ];
         for (const [blur, width, a] of passes) {
           ctx.shadowBlur = blur * dpr;
           ctx.lineWidth = b.w * dpr * width;
@@ -301,12 +316,36 @@ export default function Backdrop() {
       mouse.ty = ny;
     };
 
-    window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("resize", resize);
+    /* На телефоне resize срабатывает на каждое сворачивание адресной
+       строки. Пересобирать буферы из-за изменившейся высоты незачем —
+       холсты всё равно на весь экран, а перевыделение даёт заметный
+       рывок прямо во время прокрутки. */
+    let lastW = window.innerWidth;
+    const onResize = () => {
+      if (mobile && window.innerWidth === lastW) return;
+      lastW = window.innerWidth;
+      resize();
+    };
+
+    // Во вкладке в фоне рисовать нечего
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafBolt);
+        rafBolt = 0;
+      } else if (!rafBolt) {
+        nextAt = 0;
+        rafBolt = requestAnimationFrame(drawBolts);
+      }
+    };
+
+    if (!coarse) window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
       cancelAnimationFrame(rafField);
       cancelAnimationFrame(rafBolt);
     };

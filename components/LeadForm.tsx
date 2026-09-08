@@ -13,7 +13,7 @@ function Submit() {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" className="btn btn-primary" disabled={pending}>
+    <button type="submit" className="btn btn-primary w-full sm:w-auto" disabled={pending}>
       {pending ? (
         <>
           <Loader2 size={16} className="animate-spin" />
@@ -48,7 +48,7 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
       ref={formRef}
       action={action}
       noValidate
-      className="panel self-start p-[clamp(24px,2.4vw,32px)]"
+      className="panel self-start p-5 sm:p-[clamp(24px,2.4vw,32px)]"
     >
       <span className="label block text-ink-3">{site.contacts.form.title}</span>
       <h2 className="mt-3.5 text-[clamp(22px,2vw,28px)] leading-[1.18] text-ink">
@@ -88,6 +88,9 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
               type="text"
               required
               autoComplete="email"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="Телефон, почта или Telegram"
               className={`field-input ${invalid("contact")}`}
             />
@@ -113,7 +116,7 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
         </div>
 
         <label
-          className={`flex cursor-pointer items-start gap-3 text-[14px] leading-[1.55] ${
+          className={`flex cursor-pointer items-start gap-3 py-1 text-[14px] leading-[1.55] ${
             state.invalid.includes("consent") ? "text-stop" : "text-ink-2"
           }`}
         >
@@ -122,7 +125,7 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
             name="consent"
             value="yes"
             required
-            className="mt-0.5 h-[17px] w-[17px] shrink-0 accent-[var(--accent)]"
+            className="mt-px h-[22px] w-[22px] shrink-0 accent-[var(--accent)] sm:mt-0.5 sm:h-[18px] sm:w-[18px]"
           />
           <span>
             Согласен на обработку персональных данных в соответствии с{" "}

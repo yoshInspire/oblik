@@ -42,7 +42,10 @@ export default function HomePage() {
   return (
     <>
       {/* ================= ПЕРВЫЙ ЭКРАН ================= */}
-      <section className="relative grid min-h-[82vh] content-center pb-[clamp(40px,6vh,80px)] pl-[clamp(24px,6vw,104px)] pr-[clamp(20px,4vw,56px)] pt-[clamp(48px,7vh,104px)]">
+      {/* svh, а не vh: с vh первый экран на телефоне уезжает под адресную
+          строку и «прыгает» при её сворачивании. Отступы по бокам совпадают
+          с .shell, чтобы текст стоял на одной линии с остальными секциями. */}
+      <section className="relative grid min-h-[78svh] content-center px-[clamp(20px,4vw,44px)] pb-[clamp(36px,6vh,80px)] pt-[clamp(36px,7vh,104px)] lg:min-h-[82svh] lg:pl-[clamp(44px,6vw,104px)] lg:pr-[clamp(28px,4vw,56px)]">
         <div className="relative grid gap-[clamp(28px,4vw,64px)] lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,250px)]">
           <div>
             <h1
@@ -60,8 +63,10 @@ export default function HomePage() {
               >
                 {home.hero.sub}
               </p>
+              {/* На телефоне кнопки идут столбиком во всю ширину: рядом они
+                  не помещаются и вылезали за правый край окна */}
               <div
-                className="flex flex-none flex-wrap items-center gap-3"
+                className="flex w-full flex-col gap-3 sm:w-auto sm:flex-none sm:flex-row sm:flex-wrap sm:items-center"
                 style={{ animation: "vIn .9s .42s both" }}
               >
                 <Link href="/contacts/" className="btn btn-primary">

@@ -40,7 +40,9 @@ export default function NotFound() {
             <Link
               key={service.url}
               href={service.url}
-              className="card group flex items-center gap-4 p-6 hover:border-accent/50 hover:bg-surface-2"
+              /* min-w-0: без него карточка растягивается по неразрывной
+                 строке внутри и уезжает за край узкого экрана */
+              className="card group flex min-w-0 items-center gap-4 p-5 hover:border-accent/50 hover:bg-surface-2 sm:p-6"
             >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-wash text-accent-hi">
                 <Icon size={18} strokeWidth={1.9} />

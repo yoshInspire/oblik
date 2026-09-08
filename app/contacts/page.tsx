@@ -86,10 +86,21 @@ export default function ContactsPage() {
             <ul className="mt-5 flex flex-col gap-2.5">
               {direct.map(({ icon: Icon, label, value, href }) => (
                 <li key={value}>
-                  <a href={href} className="row-link grid-cols-[20px_minmax(90px,auto)_1fr] gap-4">
-                    <Icon size={18} strokeWidth={1.9} className="shrink-0 text-ink-3" />
-                    <span className="label text-ink-3">{label}</span>
-                    <span className="text-[15px] text-ink">{value}</span>
+                  {/* Ниже sm подпись уходит над значением: в три колонки
+                      почта не влезает и растягивает страницу вбок */}
+                  <a
+                    href={href}
+                    className="row-link grid-cols-[20px_minmax(0,1fr)] gap-x-4 gap-y-1 sm:grid-cols-[20px_minmax(90px,auto)_minmax(0,1fr)] sm:gap-y-0"
+                  >
+                    <Icon
+                      size={18}
+                      strokeWidth={1.9}
+                      className="row-start-1 shrink-0 text-ink-3"
+                    />
+                    <span className="label col-start-2 row-start-1 text-ink-3">{label}</span>
+                    <span className="col-start-2 break-words text-[15px] text-ink sm:col-start-3 sm:row-start-1">
+                      {value}
+                    </span>
                   </a>
                 </li>
               ))}

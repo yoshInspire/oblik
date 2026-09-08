@@ -36,6 +36,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${inter.variable} antialiased`}>
       <body>
+        {/* Блоки приезжают по появлению в окне, и до запуска скрипта они
+            лежат в разметке с opacity: 0. Без JS это пустая страница —
+            возвращаем содержимое на место. */}
+        <noscript>
+          <style>{`[style*="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-accent focus:px-5 focus:py-3 focus:text-white"
