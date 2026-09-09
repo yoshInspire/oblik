@@ -59,10 +59,28 @@ async function persist(lead: Lead): Promise<void> {
   await appendFile(join(dir, "leads.jsonl"), JSON.stringify(lead) + "\n", "utf8");
 }
 
+/* Человек на сайте ждёт ответа формы прямо сейчас, поэтому внешним каналам
+   отведено ограниченное время. Не уложился — пишем в журнал и живём дальше:
+   заявка к этому моменту уже лежит в файле. */
+const CHANNEL_TIMEOUT_MS = 8000;
+
+/* fetch считает успехом любой ответ сервера, включая 400 и 403. Без этой
+   проверки мёртвый канал выглядел бы работающим: телеграм ответит «неверный
+   chat_id», а в журнал ничего не попадёт и никто не узнает. */
+async function ensureOk(res: Response, channel: string): Promise<void> {
+  if (res.ok) return;
+  const body = (await res.text().catch(() => "")).slice(0, 300);
+  throw new Error(channel + " ответил " + res.status + ": " + body);
+}
+
 async function notifyTelegram(lead: Lead): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
+
+  // Адрес API вынесен в переменную: если прямой доступ к телеграму закрыт,
+  // сюда подставляется собственный релей, и код менять не надо.
+  const api = process.env.TELEGRAM_API_BASE || "https://api.telegram.org";
 
   const text = [
     "Новая заявка с сайта",
@@ -73,22 +91,26 @@ async function notifyTelegram(lead: Lead): Promise<void> {
     "Страница: " + lead.page,
   ].join("\n");
 
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const res = await fetch(`${api}/bot${token}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
+    signal: AbortSignal.timeout(CHANNEL_TIMEOUT_MS),
   });
+  await ensureOk(res, "телеграм");
 }
 
 async function notifyWebhook(lead: Lead): Promise<void> {
   const url = process.env.LEAD_WEBHOOK_URL;
   if (!url) return;
 
-  await fetch(url, {
+  const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(lead),
+    signal: AbortSignal.timeout(CHANNEL_TIMEOUT_MS),
   });
+  await ensureOk(res, "вебхук");
 }
 
 async function notifyEmail(lead: Lead): Promise<void> {
