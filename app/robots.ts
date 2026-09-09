@@ -7,7 +7,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/privacy/"],
+        // Политику конфиденциальности не закрываем: на неё ссылается согласие
+        // в форме заявки, и Яндекс проверяет её наличие у коммерческих сайтов.
+        // Закрытая роботсом страница выглядит как спрятанная.
+        disallow: ["/api/"],
       },
     ],
     sitemap: absolute("/sitemap.xml"),
