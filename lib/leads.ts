@@ -91,10 +91,59 @@ async function notifyWebhook(lead: Lead): Promise<void> {
   });
 }
 
+async function notifyEmail(lead: Lead): Promise<void> {
+  const host = process.env.SMTP_HOST;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASSWORD;
+  const to = process.env.LEAD_EMAIL_TO || user;
+  if (!host || !user || !pass || !to) return;
+
+  // Порт 465 — SMTP поверх SSL, 587 — STARTTLS. У Яндекса рабочий 465.
+  const port = Number(process.env.SMTP_PORT) || 465;
+
+  // Подключаем на месте: пока почта не настроена, модуль не грузится вовсе.
+  const { createTransport } = await import("nodemailer");
+
+  const transport = createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass },
+    // Человек ждёт ответа формы прямо сейчас — не даём SMTP подвесить отправку.
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
+  });
+
+  // Отвечать прямо из почты можно, только если в контакте оставили адрес:
+  // там же бывает телефон или телеграм.
+  const contactIsEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.contact);
+  const subject = lead.task.length > 60 ? lead.task.slice(0, 60) + "…" : lead.task;
+
+  await transport.sendMail({
+    // Яндекс принимает письмо только от имени того ящика, под которым вошли.
+    from: `"Заявки с сайта" <${user}>`,
+    to,
+    replyTo: contactIsEmail ? lead.contact : undefined,
+    subject: "Заявка с сайта: " + subject,
+    text: [
+      "Задача: " + lead.task,
+      "Контакт: " + lead.contact,
+      "Бюджет: " + lead.budget,
+      "Страница: " + lead.page,
+      "Получена: " + lead.receivedAt,
+    ].join("\n"),
+  });
+}
+
 export async function deliver(lead: Lead): Promise<void> {
   await persist(lead);
 
-  const results = await Promise.allSettled([notifyTelegram(lead), notifyWebhook(lead)]);
+  const results = await Promise.allSettled([
+    notifyTelegram(lead),
+    notifyEmail(lead),
+    notifyWebhook(lead),
+  ]);
   for (const result of results) {
     if (result.status === "rejected") {
       console.error("[lead] канал уведомления недоступен:", result.reason);

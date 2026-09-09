@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  // nodemailer тянет зависимости через динамический require — сборщик такое
+  // ломает. Оставляем пакет внешним, чтобы его грузил родной require Node.
+  serverExternalPackages: ["nodemailer"],
   poweredByHeader: false,
   // Единый формат адресов: со слешем на конце. Меняется один раз и навсегда —
   // смена формата после индексации порождает дубли.
