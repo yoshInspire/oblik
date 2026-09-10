@@ -8,6 +8,19 @@ export function absolute(path = "/"): string {
   return BASE_URL + path;
 }
 
+/* Картинка для соцсетей и мессенджеров. Файл лежит в app/opengraph-image.png,
+   Next отдаёт его по этому адресу и сам проставляет теги — но только там, где
+   метаданные не задают openGraph целиком. На страницах из реестра задают,
+   поэтому там картинку подставляем руками. */
+const OG_IMAGE = {
+  url: absolute("/opengraph-image.png"),
+  width: 1200,
+  height: 630,
+  // Город отдельной частью: в site.json он в именительном падеже,
+  // и «в ${city}» дало бы «в Москва».
+  alt: `Студия «${site.brand.name}», ${site.brand.city} — разработка сайтов и веб-сервисов`,
+};
+
 type PageMetaInput = {
   title: string;
   description: string;
@@ -29,11 +42,13 @@ export function pageMeta({ title, description, path }: PageMetaInput): Metadata 
       siteName: `Студия «${site.brand.name}»`,
       locale: "ru_RU",
       type: "website",
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [OG_IMAGE.url],
     },
   };
 }
