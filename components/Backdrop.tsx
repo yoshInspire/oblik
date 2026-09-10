@@ -19,7 +19,7 @@ uniform vec3 cBg; uniform vec3 cA; uniform vec3 cB; uniform vec3 cC;
 float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
 float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);
   return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }
-float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i=0;i<7;i++){ v += a*noise(p); p *= 2.11; a *= 0.55; } return v; }
+float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i=0;i<3;i++){ v += a*noise(p); p *= 2.11; a *= 0.55; } return v; }
 void main(){
   vec2 uv = gl_FragCoord.xy / u_res.xy;
   float asp = u_res.x / u_res.y;
@@ -51,6 +51,15 @@ const BOLT_COLORS = ["#ff3b3b", "#4b6fe8"];
 const BOLT_EVERY = 1.5; // секунды между разрядами
 const INTENSITY = 1;
 const MOUSE_PUSH = 0.7;
+
+/* Поле — размытый градиент без мелких деталей, поэтому холст под него
+   считаем в половину плотности пикселей и растягиваем: вчетверо меньше
+   работы, а глазом не отличить. Молний это не касается — там тонкие линии. */
+const FIELD_SCALE = 0.5;
+
+/* Течение медленное (u_t * 0.055), на 30 кадрах оно неотличимо от 60,
+   а стоит вдвое дешевле. */
+const FIELD_FPS = 30;
 
 type Bolt = {
   pts: [number, number][];
@@ -105,8 +114,20 @@ export default function Backdrop() {
 
     /* ---------- текучее поле ---------- */
 
-    const gl = field.getContext("webgl", { antialias: false, alpha: false });
+    let gl = field.getContext("webgl", { antialias: false, alpha: false });
     if (!gl) fallback();
+
+    /* Без видеокарты браузер считает шейдер на процессоре (SwiftShader,
+       llvmpipe). Это десятки миллионов синусов на кадр в основном потоке:
+       ни кадров, ни батареи. Там, где так, показываем статичный градиент. */
+    if (gl) {
+      const info = gl.getExtension("WEBGL_debug_renderer_info");
+      const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : "";
+      if (/swiftshader|llvmpipe|software|basic render/i.test(renderer)) {
+        fallback();
+        gl = null;
+      }
+    }
 
     const base = hexToRgb(ACCENT);
     const cA = scaleColor(base, 0.55);
@@ -119,10 +140,10 @@ export default function Backdrop() {
 
     const resize = () => {
       dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
-      for (const canvas of [field, bolt]) {
-        canvas.width = Math.max(2, Math.floor(canvas.clientWidth * dpr));
-        canvas.height = Math.max(2, Math.floor(canvas.clientHeight * dpr));
-      }
+      bolt.width = Math.max(2, Math.floor(bolt.clientWidth * dpr));
+      bolt.height = Math.max(2, Math.floor(bolt.clientHeight * dpr));
+      field.width = Math.max(2, Math.floor(field.clientWidth * dpr * FIELD_SCALE));
+      field.height = Math.max(2, Math.floor(field.clientHeight * dpr * FIELD_SCALE));
       if (gl) gl.viewport(0, 0, field.width, field.height);
     };
 
@@ -165,11 +186,19 @@ export default function Backdrop() {
 
         resize();
         const t0 = performance.now();
+        const minDelta = 1000 / FIELD_FPS;
+        let lastFrame = 0;
 
         const loop = (now: number) => {
-          mouse.x += (mouse.tx - mouse.x) * 0.05;
-          mouse.y += (mouse.ty - mouse.y) * 0.05;
-          speed *= 0.975;
+          rafField = requestAnimationFrame(loop);
+          if (now - lastFrame < minDelta) return;
+          lastFrame = now;
+
+          // Коэффициенты вдвое крупнее: кадров вдвое меньше, а инерция
+          // курсора должна ощущаться так же.
+          mouse.x += (mouse.tx - mouse.x) * 0.1;
+          mouse.y += (mouse.ty - mouse.y) * 0.1;
+          speed *= 0.95;
 
           gl.uniform2f(uniforms.res, field.width, field.height);
           gl.uniform1f(uniforms.t, (now - t0) / 1000);
@@ -181,8 +210,6 @@ export default function Backdrop() {
           gl.uniform3fv(uniforms.b, cB);
           gl.uniform3fv(uniforms.c, cC);
           gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-          rafField = requestAnimationFrame(loop);
         };
         rafField = requestAnimationFrame(loop);
       }
