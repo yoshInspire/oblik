@@ -75,23 +75,21 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
           />
         </label>
 
-        <div className="grid gap-3.5 sm:grid-cols-2">
-          <label className="grid gap-2" htmlFor="contact">
-            <span className="text-[14px] text-ink-2">Как с вами связаться</span>
-            <input
-              id="contact"
-              name="contact"
-              type="text"
-              required
-              autoComplete="email"
-              autoCapitalize="off"
-              autoCorrect="off"
-              spellCheck={false}
-              placeholder="Телефон, почта или Telegram"
-              className={`field-input ${invalid("contact")}`}
-            />
-          </label>
-        </div>
+        <label className="grid gap-2" htmlFor="contact">
+          <span className="text-[14px] text-ink-2">Как с вами связаться</span>
+          <input
+            id="contact"
+            name="contact"
+            type="text"
+            required
+            autoComplete="email"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+            placeholder="Телефон, почта или Telegram"
+            className={`field-input ${invalid("contact")}`}
+          />
+        </label>
 
         <label
           className={`flex cursor-pointer items-start gap-3 py-1 text-[14px] leading-[1.55] ${
