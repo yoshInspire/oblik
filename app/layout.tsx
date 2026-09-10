@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   applicationName: `Студия «${site.brand.name}»`,
   formatDetection: { telephone: false },
   robots: { index: true, follow: true },
-  verification: { yandex: "4b4acb15f8e6186e" },
+  verification: { yandex: "edb74110ab528797" },
 };
 
 /** Счётчик Яндекс.Метрики. Номер публичный, прятать его смысла нет. */
