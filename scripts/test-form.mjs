@@ -42,7 +42,6 @@ async function submit(values) {
 const valid = {
   task: "Отвалился обмен с 1С на интернет-магазине, заказы не уходят в учёт.",
   contact: "test@example.com",
-  budget: "100 000 – 300 000 ₽",
   consent: "yes",
 };
 

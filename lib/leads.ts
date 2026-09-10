@@ -4,7 +4,6 @@ import { join } from "node:path";
 export type Lead = {
   task: string;
   contact: string;
-  budget: string;
   page: string;
   receivedAt: string;
   ip: string;
@@ -87,7 +86,6 @@ async function notifyTelegram(lead: Lead): Promise<void> {
     "",
     "Задача: " + lead.task,
     "Контакт: " + lead.contact,
-    "Бюджет: " + lead.budget,
     "Страница: " + lead.page,
   ].join("\n");
 
@@ -151,7 +149,6 @@ async function notifyEmail(lead: Lead): Promise<void> {
     text: [
       "Задача: " + lead.task,
       "Контакт: " + lead.contact,
-      "Бюджет: " + lead.budget,
       "Страница: " + lead.page,
       "Получена: " + lead.receivedAt,
     ].join("\n"),

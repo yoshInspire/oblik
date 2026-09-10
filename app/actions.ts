@@ -23,7 +23,6 @@ export async function submitLead(
 
   const task = clean(formData.get("task"), 2000);
   const contact = clean(formData.get("contact"), 200);
-  const budget = clean(formData.get("budget"), 100) || "Не указан";
   const page = clean(formData.get("page"), 200) || "/";
   const consent = formData.get("consent");
 
@@ -59,7 +58,6 @@ export async function submitLead(
   const lead: Lead = {
     task,
     contact,
-    budget,
     page,
     receivedAt: new Date().toISOString(),
     ip,

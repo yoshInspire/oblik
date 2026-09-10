@@ -37,10 +37,6 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
     if (state.status !== "idle") alertRef.current?.focus();
   }, [state]);
 
-  const budget = site.contacts.form.fields.find((f) => f.name === "budget") as
-    | { options?: string[] }
-    | undefined;
-
   const invalid = (name: string) => (state.invalid.includes(name) ? "!border-stop" : "");
 
   return (
@@ -95,24 +91,6 @@ export default function LeadForm({ title, lead }: { title?: string; lead?: strin
               className={`field-input ${invalid("contact")}`}
             />
           </label>
-
-          {budget?.options && (
-            <label className="grid gap-2" htmlFor="budget">
-              <span className="text-[14px] text-ink-2">Ориентир по бюджету</span>
-              <select
-                id="budget"
-                name="budget"
-                defaultValue={budget.options[0]}
-                className="field-input appearance-none"
-              >
-                {budget.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
         </div>
 
         <label
